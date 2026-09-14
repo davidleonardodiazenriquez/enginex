@@ -74,3 +74,16 @@ environment variables:
 - `AZURE_AI_FOUNDRY_API_VERSION` (optional; defaults to `2024-10-21`)
 
 The API key is never returned to the browser.
+
+For Astra, use `AZURE_AI_FOUNDRY_ENDPOINT=https://<resource>.openai.azure.com/openai/v1/`
+and set `AZURE_AI_FOUNDRY_DEPLOYMENT` to the deployment name, such as `gpt-6-astra`.
+The v1 base URL and a complete `/openai/v1/chat/completions` URL are both supported.
+The dated API version setting is ignored for v1 endpoints. Requests use
+`max_completion_tokens` with a 4,096-token budget for reasoning and output, and
+omit custom temperature values.
+
+Resource-root URLs and full legacy deployment URLs remain supported. A resource
+root uses the dated API unless `AZURE_AI_FOUNDRY_API_VERSION` is `v1` or `preview`.
+Provider failures log the HTTP status and error identifiers without logging the
+API key, prompts, or upstream error messages. The chat subtitle indicates setup,
+not a live connectivity check.
