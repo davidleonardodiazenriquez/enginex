@@ -32,7 +32,7 @@ def container_client():
 
 def inspect_pdf(data):
     if not data or len(data) > settings.CONTRACT_MAX_BYTES:
-        raise DocumentError("Choose a PDF no larger than 25 MB.")
+        raise DocumentError("Choose a PDF no larger than 64 MB.")
     if not data.startswith(b"%PDF-"):
         raise DocumentError("The file is not a PDF.")
     try:
@@ -108,7 +108,7 @@ def read_blob(name):
         blob = container_client().get_blob_client(name)
         properties = blob.get_blob_properties()
         if properties.size > settings.CONTRACT_MAX_BYTES:
-            raise DocumentError("Choose a PDF no larger than 25 MB.")
+            raise DocumentError("Choose a PDF no larger than 64 MB.")
         return blob.download_blob(max_concurrency=1).readall()
     except AzureError:
         raise DocumentError("The selected storage PDF could not be read.") from None

@@ -53,7 +53,7 @@ def contract_ingest(request):
     for item, blob_name in [(f,"") for f in files] + [(None,n) for n in blob_names]:
         try:
             if item and item.size > contract_storage.settings.CONTRACT_MAX_BYTES:
-                raise contract_storage.DocumentError("Choose a PDF no larger than 25 MB.")
+                raise contract_storage.DocumentError("Choose a PDF no larger than 64 MB.")
             data = item.read() if item else contract_storage.read_blob(blob_name)
             doc, created = ingest_pdf(data,item.name if item else blob_name,user=request.user,original_blob=blob_name)
             documents.append(doc)

@@ -86,7 +86,7 @@ of replacing earlier evidence.
 
 ## Explicit limits
 
-- PDFs: 25 MB, 80 pages and 220,000 extracted text characters per document.
+- PDFs: 64 MB, 80 pages and 220,000 extracted text characters per document.
 - OCR is not configured. Scanned PDFs with no usable text layer are rejected for
   extraction with an actionable message. Existing OCR text is used as supplied;
   image-only plans and signature pages are available visually but not interpreted.
