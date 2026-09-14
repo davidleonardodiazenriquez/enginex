@@ -70,8 +70,8 @@ class Command(BaseCommand):
         if username and password:
             user_model = get_user_model()
             user, _ = user_model.objects.get_or_create(username=username)
-            user.is_staff = True
-            user.is_superuser = True
+            user.is_staff = False
+            user.is_superuser = False
             user.set_password(password)
             user.save()
             self.stdout.write(self.style.SUCCESS(f"Demo user '{username}' is ready."))
