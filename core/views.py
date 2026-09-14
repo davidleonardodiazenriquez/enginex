@@ -7,11 +7,22 @@ from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from core import foundry
+from core.locations import map_locations
 from core.portfolio import asset_context, get_dashboard_asset
 
 
 def health(request):
     return JsonResponse({"status": "healthy"})
+
+
+@login_required
+def portfolio_map(request):
+    locations = map_locations()
+    return render(request, "core/portfolio_map.html", {
+        "locations": locations,
+        "featured": locations[0],
+        "ready_count": sum(location["ready"] for location in locations),
+    })
 
 
 @login_required

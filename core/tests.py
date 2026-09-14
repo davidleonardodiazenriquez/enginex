@@ -29,7 +29,7 @@ class CoreViewsTests(TestCase):
     def test_dashboard_requires_login(self):
         response = self.client.get(reverse("dashboard"))
 
-        self.assertRedirects(response, f"{reverse('login')}?next=/")
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('dashboard')}")
 
     def test_login_page_is_available(self):
         response = self.client.get(reverse("login"))

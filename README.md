@@ -71,6 +71,37 @@ POSTGRES_DB=enginex \
 python scripts/setup_database.py
 ```
 
+## Portfolio map
+
+After login, `/` opens the interactive Abu Dhabi portfolio map. The six
+community locations are configured in `core/locations.py`. Al Rayyana opens
+`/assets/al-rayyana/` with the existing metrics and AI assistant; the five other
+locations show previews with "Metrics coming soon" and have no fabricated
+financial records. The map reads Al Rayyana's home/building counts from the
+database. Search, readiness filters, nearby-location grouping, pan/zoom, a reset
+control, and satellite/street styles work on desktop and mobile. Reduced-motion
+preferences disable animated camera moves. No schema migration is required.
+
+Leaflet 1.9.4 and its BSD license are bundled under `core/static/core/vendor`.
+Satellite tiles load directly from Esri World Imagery and street tiles from
+OpenStreetMap, with attribution on the map. These require browser internet access.
+If tiles fail, the location list and Al Rayyana metrics link remain usable.
+
+Design reference: [World of Aldar](https://world.aldar.com/uae).
+Property photos are from Aldar's [Al Rayyana](https://www.aldar.com/en/explore-aldar/businesses/development/residential/other-destinations/al-rayyana),
+[Gate & Arc](https://www.aldar.com/properties/en/uae/reem-island/gate),
+[Sas Al Nakhl](https://www.aldar.com/en/explore-aldar/businesses/investment/retail/communities/sas-al-nakhl),
+[Eastern Mangroves](https://www.aldar.com/en/explore-aldar/businesses/investment/retail/communities/eastern-mangroves),
+and [The Bridges](https://cloudliving.aldar.com/en/the-bridges) pages. Gate and Arc
+share district photography. Pins indicate community locations, not property
+boundaries. The Bridges II is placed near Tower 4 using the
+[map listing](https://yandex.com/maps/org/the_bridges_tower_4/12164780943/);
+[Arc](https://yandex.com/maps/11498/abu-dhabi/house/YU0YcgdpT0ECQFxufXh4dH5mZw%3D%3D/),
+[Sas Al Nakhl](https://yandex.com/maps/11498/abu-dhabi/geo/5167669792/),
+and [Al Rayyana's street location](https://yandex.com/maps/11498/abu-dhabi/geo/5185447516/)
+were cross-checked. Exact asset boundaries and phase coverage can be added with
+the additional asset data.
+
 ## Azure AI Foundry chat
 
 The dashboard chat uses a server-side proxy. Configure these Container App

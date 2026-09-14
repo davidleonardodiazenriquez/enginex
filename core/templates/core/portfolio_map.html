@@ -1,0 +1,70 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Portfolio map · Enginex{% endblock %}
+{% block body_class %}portfolio-map-page{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'core/vendor/leaflet/leaflet.css' %}">
+<link rel="stylesheet" href="{% static 'core/portfolio-map.css' %}">
+{% endblock %}
+{% block content %}
+<header class="atlas-header">
+  <a class="brand brand-light" href="{% url 'portfolio' %}"><span class="brand-mark">E</span><span>ENGINEX<small>ASSET INTELLIGENCE</small></span></a>
+  <nav aria-label="Primary navigation"><a class="active" href="{% url 'portfolio' %}"><span class="nav-map-icon">⌖</span> Portfolio map</a><a href="{% url 'dashboard' %}">Al Rayyana metrics <span>↗</span></a></nav>
+  <div class="atlas-account"><span class="workspace-dot"></span><span class="workspace-label">YOUR WORKSPACE</span><span class="account-avatar">{{ request.user.username|first|upper }}</span><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form></div>
+</header>
+
+<main class="atlas-shell">
+  <div id="portfolio-map" aria-label="Interactive map of six Abu Dhabi assets"></div>
+  <div class="map-vignette" aria-hidden="true"></div>
+  <aside class="explorer" aria-label="Explore portfolio locations">
+    <div class="explorer-intro">
+      <p class="atlas-eyebrow"><span></span> ABU DHABI, UAE</p>
+      <h1>Your portfolio.<br><em>In perspective.</em></h1>
+      <p class="explorer-description">Discover the places.<br>Understand the performance.</p>
+      <button class="mobile-locations-toggle" type="button" aria-expanded="false" aria-controls="location-browser">Explore 6 locations <span>⌄</span></button>
+    </div>
+    <section class="location-browser" id="location-browser">
+      <div class="browser-heading"><h2>Explore your assets</h2><span>06</span></div>
+      <label class="location-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="location-search" type="search" placeholder="Find a location…" aria-label="Find a location" autocomplete="off"></label>
+      <div class="location-filters" aria-label="Filter locations"><button class="active" data-filter="all" aria-pressed="true">All locations <span>6</span></button><button data-filter="ready" aria-pressed="false">Metrics ready <span>{{ ready_count }}</span></button></div>
+      <div class="location-list">
+        {% for location in locations %}
+        <button class="location-row{% if forloop.first %} is-selected{% endif %}" data-location="{{ location.id }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}">
+          <span class="location-number">{{ location.number }}</span><span class="location-row-copy"><strong>{{ location.name }}</strong><small>{{ location.area }}</small></span><span class="location-indicator{% if location.ready %} is-ready{% endif %}" aria-label="{% if location.ready %}Metrics ready{% else %}Metrics coming soon{% endif %}"></span><span class="row-arrow" aria-hidden="true">↗</span>
+        </button>
+        {% endfor %}
+      </div>
+      <p class="location-empty" hidden>No matching locations. Try another name.</p>
+      <div class="browser-footnote"><span class="status-dot"></span> {{ ready_count }} asset with metrics <span class="footnote-divider">/</span> 6 locations to explore</div>
+    </section>
+  </aside>
+
+  <div class="map-tools" aria-label="Map controls">
+    <div class="north-compass" title="North is up" aria-label="North is up"><span>N</span><svg viewBox="0 0 32 38" aria-hidden="true"><path d="M16 2 26 34 16 27Z" fill="#d7b367"/><path d="M16 2 6 34 16 27Z" fill="#aab9bd"/></svg></div>
+    <div class="zoom-tools"><button id="zoom-in" aria-label="Zoom in">+</button><button id="zoom-out" aria-label="Zoom out">−</button></div>
+    <button class="reset-map" id="reset-map" aria-label="Show all locations" title="Show all locations"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/><circle cx="12" cy="12" r="3"/></svg></button>
+  </div>
+
+  <article class="asset-preview" aria-labelledby="preview-title">
+    <div class="preview-image-wrap"><img id="preview-image" src="{{ featured.image_url }}" alt="{{ featured.name }} community" fetchpriority="high"><span class="preview-kicker">EXPLORE THE ASSET</span><span class="preview-count" id="preview-number">01 / 06</span></div>
+    <div class="preview-content">
+      <div class="preview-meta"><span id="preview-area">{{ featured.area }}</span><span class="preview-status{% if featured.ready %} ready{% endif %}" id="preview-status">{% if featured.ready %}Metrics ready{% else %}Coming soon{% endif %}</span></div>
+      <h2 id="preview-title">{{ featured.name }}</h2>
+      <p id="preview-description">{{ featured.description }}</p>
+      <div class="preview-facts" id="preview-facts">{% for fact in featured.facts %}<div><strong>{{ fact.value }}</strong><span>{{ fact.label }}</span></div>{% endfor %}</div>
+      <a class="preview-action" id="preview-link" href="{% url 'dashboard' %}"{% if not featured.ready %} hidden{% endif %}>Explore asset metrics <span>↗</span></a>
+      <p class="preview-coming" id="preview-coming"{% if featured.ready %} hidden{% endif %}>Metrics coming soon. This location is ready to explore on the map.</p>
+    </div>
+  </article>
+
+  <footer class="atlas-footer"><div class="map-legend"><span><i class="ready-dot"></i> Metrics ready</span><span><i></i> Coming soon</span></div><div class="map-mode" aria-label="Map style"><button class="active" data-map-style="satellite" aria-pressed="true">Satellite</button><button data-map-style="street" aria-pressed="false">Street</button></div><span class="map-hint">Drag to explore <span>·</span> Scroll to zoom</span></footer>
+  <p id="map-message" class="map-message" role="status" hidden></p>
+  <span id="map-announcement" class="sr-only" aria-live="polite"></span>
+  <noscript><p class="map-message">Enable JavaScript to explore the interactive map. <a href="{% url 'dashboard' %}">Open Al Rayyana metrics</a>.</p></noscript>
+  {{ locations|json_script:"portfolio-locations" }}
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'core/vendor/leaflet/leaflet.js' %}" defer></script>
+<script src="{% static 'core/portfolio-map.js' %}" defer></script>
+{% endblock %}

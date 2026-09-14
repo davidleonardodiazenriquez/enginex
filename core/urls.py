@@ -2,10 +2,11 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from core.forms import EnginexAuthenticationForm
-from core.views import chat, dashboard, health
+from core.views import chat, dashboard, health, portfolio_map
 
 urlpatterns = [
-    path("", dashboard, name="dashboard"),
+    path("", portfolio_map, name="portfolio"),
+    path("assets/al-rayyana/", dashboard, name="dashboard"),
     path(
         "login/",
         auth_views.LoginView.as_view(

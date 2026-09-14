@@ -12,7 +12,7 @@ def get_dashboard_asset():
     return (
         Asset.objects.select_related("metrics")
         .prefetch_related("tenant_revenues", "vacancies")
-        .first()
+        .filter(name="Al Rayyana").first()
     )
 
 

@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#071a31">
   <title>{% block title %}Enginex{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'core/app.css' %}">
+  {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
   {% block content %}{% endblock %}
