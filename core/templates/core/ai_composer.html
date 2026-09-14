@@ -1,0 +1,6 @@
+<form class="ai-composer" data-ai-form action="{% url 'enginex_ai_chat' %}" method="post">
+  {% csrf_token %}
+  <label class="ai-input-label" for="ai-question">Ask EnginexAI</label>
+  <div class="ai-input-row"><span class="ai-input-spark" aria-hidden="true">✦</span><textarea id="ai-question" name="message" rows="1" maxlength="4000" placeholder="Ask about your portfolio…" aria-label="Ask EnginexAI about your portfolio" enterkeyhint="send" required></textarea><button class="ai-send" type="submit" aria-label="Send question">↑</button></div>
+  <div class="ai-composer-meta"><span><i></i> Entire portfolio + contracts</span><small>Enter to send · Shift + Enter for a new line</small></div>
+</form>

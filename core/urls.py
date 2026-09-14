@@ -4,8 +4,11 @@ from django.urls import path
 from core.forms import EnginexAuthenticationForm
 from core.views import chat, dashboard, health, portfolio_map
 from core import contract_views as documents
+from core import ai_views
 
 urlpatterns = [
+    path("enginex-ai/", ai_views.workspace, name="enginex_ai"),
+    path("api/enginex-ai/", ai_views.chat, name="enginex_ai_chat"),
     path("", portfolio_map, name="portfolio"),
     path("assets/al-rayyana/", dashboard, name="dashboard"),
     path("assets/<slug:asset_slug>/", dashboard, name="asset_dashboard"),

@@ -56,6 +56,52 @@ report links remain available if WebGL is unavailable.
    per value with origin, review status, document title, page, quote and PDF URL.
    Synthetic rows have no PDF URL. Source links require an authenticated session.
 
+## EnginexAI and mobile
+
+Open **EnginexAI** from the left navigation (bottom navigation on a phone). The
+composer remains visible at the bottom of the workspace. Every other authenticated
+page has the same bottom composer: tap it to expand the conversation, or minimize
+the conversation while keeping the input available. The current conversation is
+shared between these views in the same browser tab, with the last 12 exchanges
+retained in session storage. **New conversation** clears it.
+
+Useful demo prompts:
+
+- “Compare annual rent across all six locations and plot a bar chart.”
+- “Which ten synthetic leases have the highest arrears? Link their records.”
+- “Plot occupied versus vacant records as a doughnut chart.”
+- “Show upcoming lease expiries by month as a line chart.”
+- “What do the ten anonymized contracts say about escalation? Cite PDF pages.”
+
+Each question refreshes the database overview. Astra can call read-only tools for
+all 33 lease baseline fields, every location, asset facts, legacy metrics and
+rankings, extracted fields, stored PDF page text, extraction status and recent
+association history. Unassigned contracts are included. A location dashboard
+supplies context for “this property”, but does not restrict global questions.
+Detail results are paginated; the model can retrieve additional pages. Totals and
+charts are calculated over all matching records before output pagination. Data
+query coverage and source links are available beneath each answer.
+
+Charts currently support bar, line and doughnut views, with a values table and
+CSV/SVG downloads. Financial chart totals use synthetic records only; extracted
+verbatim terms and legacy summary figures remain separate. The AI cannot execute
+arbitrary code, change records or access user-account credentials. It does not
+invent historical performance series. Source links open authenticated originals;
+review unconfirmed extractions against their PDFs. Stored page text cannot read
+image-only plans or signatures. Complex questions may need a narrower follow-up;
+a turn has a bounded number of queries and a time limit.
+
+The global UI uses `/api/enginex-ai/`. The older `/api/chat/` and asset chat routes
+remain compatible with their previous, selected-asset summary API. The configured
+Astra Chat Completions deployment requires `reasoning_effort=none` for function
+calls; tool-free finalization can use its default. No new cloud credentials,
+database tables or environment variables are required.
+
+Mobile layouts use safe-area insets and the visual viewport to keep the input
+above the keyboard, a compact property heading, scrollable report tables, touch
+controls and bottom navigation. Browser emulation cannot fully reproduce a
+physical iPhone's keyboard and Safari toolbar behavior.
+
 ## Additive data operations
 
 `python manage.py populate_portfolio` is repeatable. It creates missing assets,

@@ -9,7 +9,7 @@
   <nav class="topnav" aria-label="Primary navigation">
     <a href="{% url 'portfolio' %}">← Portfolio map</a>
     <a href="{% url 'portfolio_report' %}">Portfolio report</a><a href="{% url 'contracts' %}">Contracts</a>
-    <a href="#assistant">AI insights</a>
+    <a href="{% url 'enginex_ai' %}">EnginexAI</a>
   </nav>
   <div class="account-menu">
     <span class="account-avatar">{{ request.user.username|first|upper }}</span>
@@ -101,20 +101,8 @@
 {% endif %}
 </main>
 
-<button class="chat-launcher" data-chat-open aria-label="Open Enginex AI"><span>✦</span></button>
-<aside class="chat-panel" id="assistant" aria-hidden="true">
-  <header><div><span class="chat-symbol">✦</span><div><strong>Enginex AI</strong><small>{% if foundry_configured %}{% if asset %}Using {{ asset.name }} dashboard data{% else %}No asset data available{% endif %}{% else %}Assistant setup pending{% endif %}</small></div></div><button data-chat-close aria-label="Close chat">×</button></header>
-  <div class="chat-messages" data-chat-messages>
-    <div class="message assistant">{% if asset %}I can review {{ asset.name }}'s dashboard data. Ask me what needs attention, or explore renewals, tenant exposure, and vacancies.{% else %}There are no asset records to analyse yet. Once data is added, I can help review it.{% endif %}</div>
-  </div>
-  <form class="chat-form" data-chat-form data-endpoint="{% url 'asset_chat' asset_slug %}">
-    <textarea name="message" rows="2" maxlength="4000" placeholder="Ask a portfolio question…" required></textarea>
-    <button type="submit" aria-label="Send message">↑</button>
-  </form>
-</aside>
-<meta name="csrf-token" content="{{ csrf_token }}">
 {% endblock %}
-{% block scripts %}<script src="{% static 'core/app.js' %}" defer></script>
+{% block scripts %}
 {% if asset %}
 <script type="importmap">{"imports":{"three":"{% static 'core/vendor/three/three.module.js' %}","three/controls":"{% static 'core/vendor/three/OrbitControls.js' %}"}}</script>
 <script src="{% static 'core/property-scene-loader.js' %}" defer></script>

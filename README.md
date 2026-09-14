@@ -158,3 +158,11 @@ root uses the dated API unless `AZURE_AI_FOUNDRY_API_VERSION` is `v1` or `previe
 Provider failures log the HTTP status and error identifiers without logging the
 API key, prompts, or upstream error messages. The chat subtitle indicates setup,
 not a live connectivity check.
+
+## EnginexAI
+
+`/enginex-ai/` provides portfolio-wide Astra analysis, read-only database queries,
+PDF evidence links and calculated bar, line and doughnut charts. A persistent
+bottom composer is available on all authenticated app pages. The layout adapts
+to mobile Safari with bottom navigation and keyboard-aware input positioning.
+See the demo walkthrough for example prompts, provenance and supported scope.

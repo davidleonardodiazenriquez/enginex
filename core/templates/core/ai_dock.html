@@ -1,0 +1,8 @@
+<aside class="ai-dock" data-ai-root data-current-location="{{ asset.name|default:'' }}" aria-label="EnginexAI portfolio assistant">
+  <div class="ai-dock-conversation" data-ai-conversation hidden>
+    <header class="ai-dock-header"><div><span>✦</span><div><strong>EnginexAI</strong><small>Ask across all properties and contracts</small></div></div><div><a href="{% url 'enginex_ai' %}" aria-label="Open full EnginexAI workspace" title="Open workspace">⤢</a><button type="button" data-ai-close aria-label="Minimize conversation">−</button></div></header>
+    <div class="ai-thread" data-ai-thread role="log" aria-label="Conversation" aria-live="polite"><div class="ai-empty-message">Ask for a comparison, find a contract term, or plot a chart across the portfolio.</div></div>
+    <div class="ai-dock-actions"><button type="button" data-ai-new>New conversation</button><a href="{% url 'enginex_ai' %}">Open analysis workspace ↗</a></div>
+  </div>
+  {% include 'core/ai_composer.html' %}
+</aside>

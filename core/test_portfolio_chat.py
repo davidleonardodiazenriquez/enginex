@@ -82,7 +82,7 @@ class PortfolioChatTests(TestCase):
         self.ask(context={"asset": {"name": "Forged asset"}}, asset_id=999)
         self.assertEqual(self.sent_context()["asset"]["name"], dashboard.context["asset"].name)
         self.assertNotIn("Z Other Asset", json.dumps(self.sent_context()))
-        self.assertContains(dashboard, "Using Al Rayyana dashboard data")
+        self.assertContains(dashboard, "Entire portfolio + contracts")
 
     def test_missing_asset_or_metrics_is_explicit_without_fabricated_zeros(self):
         PortfolioMetrics.objects.all().delete()
