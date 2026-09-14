@@ -1,0 +1,5 @@
+# The Python base image's upstream SBOM retains these entries after the packages
+# are explicitly removed. The workflow verifies both distributions are absent
+# from the final runtime container before running Trivy.
+GHSA-6v7p-g79w-8964
+CVE-2025-47273
