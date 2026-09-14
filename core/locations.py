@@ -1,9 +1,9 @@
-"""The six locations in the hackathon map; no placeholder financial records."""
+"""Map catalog; readiness and provenance come from persisted portfolio records."""
 
 from django.templatetags.static import static
 from django.urls import reverse
 
-from core.portfolio import get_dashboard_asset
+from core.models import Asset
 
 
 LOCATIONS = (
@@ -29,15 +29,16 @@ LOCATIONS = (
 
 
 def map_locations():
-    asset = get_dashboard_asset()
+    assets = {asset.name: asset for asset in Asset.objects.all()}
     locations = []
     for index, location in enumerate(LOCATIONS, 1):
-        ready = location["id"] == "al-rayyana" and asset is not None
+        asset = assets.get(location["name"])
+        ready = asset is not None
         locations.append({
             **location, "number": f"{index:02d}", "ready": ready,
             "image_url": static("core/locations/" + location["image"]),
-            "metrics_url": reverse("dashboard") if ready else None,
-            "facts": [{"label": "Homes", "value": f"{asset.units:,}"},
-                      {"label": "Buildings", "value": str(asset.buildings)}] if ready else [],
+            "metrics_url": (reverse("dashboard") if location["id"] == "al-rayyana" else reverse("asset_dashboard", args=[location["id"]])) if ready else None,
+            "facts": [{"label": "Homes · " + asset.field_sources.get("units", "existing demo"), "value": f"{asset.units:,}"},
+                      {"label": "Buildings · " + asset.field_sources.get("buildings", "existing demo"), "value": str(asset.buildings)}] if ready else [],
         })
     return locations

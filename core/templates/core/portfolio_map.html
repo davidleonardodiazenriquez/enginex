@@ -9,7 +9,7 @@
 {% block content %}
 <header class="atlas-header">
   <a class="brand brand-light" href="{% url 'portfolio' %}"><span class="brand-mark">E</span><span>ENGINEX<small>ASSET INTELLIGENCE</small></span></a>
-  <nav aria-label="Primary navigation"><a class="active" href="{% url 'portfolio' %}"><span class="nav-map-icon">⌖</span> Portfolio map</a><a href="{% url 'dashboard' %}">Al Rayyana metrics <span>↗</span></a></nav>
+  <nav aria-label="Primary navigation"><a class="active" href="{% url 'portfolio' %}"><span class="nav-map-icon">⌖</span> Portfolio map</a><a href="{% url 'portfolio_report' %}">Portfolio report <span>↗</span></a><a href="{% url 'contracts' %}">Contracts <span>↗</span></a></nav>
   <div class="atlas-account"><span class="workspace-dot"></span><span class="workspace-label">YOUR WORKSPACE</span><span class="account-avatar">{{ request.user.username|first|upper }}</span><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form></div>
 </header>
 
@@ -20,7 +20,7 @@
     <div class="explorer-intro">
       <p class="atlas-eyebrow"><span></span> ABU DHABI, UAE</p>
       <h1>Your portfolio.<br><em>In perspective.</em></h1>
-      <p class="explorer-description">Discover the places.<br>Understand the performance.</p>
+      <p class="explorer-description">{{ summary.synthetic_records }} synthetic records across six locations.<br><a class="map-evidence-link" href="{% url 'contracts' %}">{{ summary.documents }} source PDFs · {{ summary.unassigned_documents }} awaiting location ↗</a></p>
       <button class="mobile-locations-toggle" type="button" aria-expanded="false" aria-controls="location-browser">Explore 6 locations <span>⌄</span></button>
     </div>
     <section class="location-browser" id="location-browser">
@@ -35,7 +35,7 @@
         {% endfor %}
       </div>
       <p class="location-empty" hidden>No matching locations. Try another name.</p>
-      <div class="browser-footnote"><span class="status-dot"></span> {{ ready_count }} asset with metrics <span class="footnote-divider">/</span> 6 locations to explore</div>
+      <div class="browser-footnote"><span class="status-dot"></span> {{ ready_count }} assets with demo metrics <span class="footnote-divider">/</span> 6 locations to explore</div>
     </section>
   </aside>
 
@@ -46,7 +46,7 @@
   </div>
 
   <article class="asset-preview" aria-labelledby="preview-title">
-    <div class="preview-image-wrap"><img id="preview-image" src="{{ featured.image_url }}" alt="{{ featured.name }} community" fetchpriority="high"><span class="preview-kicker">EXPLORE THE ASSET</span><span class="preview-count" id="preview-number">01 / 06</span></div>
+    <div class="preview-image-wrap"><img id="preview-image" src="{{ featured.image_url }}" alt="{{ featured.name }} community" fetchpriority="high"><span class="preview-kicker">DEMO PORTFOLIO</span><span class="preview-count" id="preview-number">01 / 06</span></div>
     <div class="preview-content">
       <div class="preview-meta"><span id="preview-area">{{ featured.area }}</span><span class="preview-status{% if featured.ready %} ready{% endif %}" id="preview-status">{% if featured.ready %}Metrics ready{% else %}Coming soon{% endif %}</span></div>
       <h2 id="preview-title">{{ featured.name }}</h2>
@@ -60,7 +60,7 @@
   <footer class="atlas-footer"><div class="map-legend"><span><i class="ready-dot"></i> Metrics ready</span><span><i></i> Coming soon</span></div><div class="map-mode" aria-label="Map style"><button class="active" data-map-style="satellite" aria-pressed="true">Satellite</button><button data-map-style="street" aria-pressed="false">Street</button></div><span class="map-hint">Drag to explore <span>·</span> Scroll to zoom</span></footer>
   <p id="map-message" class="map-message" role="status" hidden></p>
   <span id="map-announcement" class="sr-only" aria-live="polite"></span>
-  <noscript><p class="map-message">Enable JavaScript to explore the interactive map. <a href="{% url 'dashboard' %}">Open Al Rayyana metrics</a>.</p></noscript>
+  <noscript><p class="map-message">Enable JavaScript to explore the map. <a href="{% url 'portfolio_report' %}">Open the portfolio report</a>.</p></noscript>
   {{ locations|json_script:"portfolio-locations" }}
 </main>
 {% endblock %}

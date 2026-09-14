@@ -128,3 +128,6 @@
   .asset-pin-label { padding: 8px 10px; }.asset-pin-label strong { font-size: 10px; }.asset-pin-label small { font-size: 7px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
+
+.map-evidence-link { color:#ead3a0; text-decoration:none; font-size:11px; }.preview-facts span { font-size:8px; max-width:100px; line-height:1.5; }.atlas-header nav { gap:24px; }
+@media(max-width:760px) { .atlas-header nav { display:flex; gap:14px; position:absolute; top:67px; left:20px; z-index:12; background:#0c2537eb; padding:9px 12px; border-radius:5px; }.atlas-header nav a { font-size:9px; }.atlas-header nav a:first-child { display:none; }.explorer { top:60px; }.preview-facts { flex-wrap:wrap; }.preview-facts span { font-size:7px; }.preview-image-wrap { min-height:210px; } }

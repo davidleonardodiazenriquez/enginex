@@ -1,13 +1,14 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block title %}Asset Overview · Enginex{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'core/workspace.css' %}">{% endblock %}
 {% block body_class %}dashboard-page{% endblock %}
 {% block content %}
 <header class="topbar">
   <a class="brand brand-light" href="{% url 'portfolio' %}"><span class="brand-mark">E</span><span>ENGINEX</span></a>
   <nav class="topnav" aria-label="Primary navigation">
     <a href="{% url 'portfolio' %}">← Portfolio map</a>
-    <a href="#performance">Performance</a>
+    <a href="{% url 'portfolio_report' %}">Portfolio report</a><a href="{% url 'contracts' %}">Contracts</a>
     <a href="#assistant">AI insights</a>
   </nav>
   <div class="account-menu">
@@ -23,14 +24,21 @@
     <div>
       <p class="eyebrow">PORTFOLIO COMPOSITION · SAMPLE DATA</p>
       <h1>{{ asset.name }} <span>Asset overview</span></h1>
-      <p>Live composition, leasing exposure, and renewal performance.</p>
+      <p>Demo composition, leasing exposure, and document evidence. All values retain their provenance.</p>
     </div>
     <div class="heading-actions">
-      <button class="button button-secondary">Export fact sheet</button>
+      <a class="button button-secondary" href="{% url 'report_export' %}?asset={{ asset.pk }}">Export values & sources</a>
       <button class="button button-primary" data-chat-open>Ask Enginex AI</button>
     </div>
   </section>
 
+  <section class="summary-grid">
+    <article><small>Synthetic record sample</small><strong>{{ summary.synthetic_records }}</strong><span>Unit / lease records · {{ summary.synthetic_fields }} values</span></article>
+    <article><small>Sample occupancy</small><strong>{{ summary.occupancy_pct|default_if_none:'—' }}%</strong><span>Synthetic demo · {{ summary.as_of|date:'d M Y' }}</span></article>
+    <article><small>Contract evidence</small><strong>{{ summary.documents }}</strong><a href="{% url 'portfolio_report' %}?asset={{ asset.pk }}&source=documents">Review document-backed values ↗</a></article>
+    <article><small>Explore the records</small><strong>{{ summary.records }}</strong><a href="{% url 'portfolio_report' %}?asset={{ asset.pk }}">Open this location’s report ↗</a></article>
+  </section>
+  <p class="workspace-footnote">Synthetic sample totals are independent of the summary charts below. PDFs support their quoted values only; a manual association does not change the premises stated in a contract.</p>
   <section class="overview-grid">
     <article class="property-card">
       <div class="property-label">
@@ -44,31 +52,17 @@
       <div class="landscape"><span></span><span></span><span></span><span></span><span></span></div>
     </article>
 
-    <article class="map-card">
-      <div class="map-grid"></div>
-      <span class="map-road road-a"></span><span class="map-road road-b"></span><span class="map-road road-c"></span>
-      <div class="map-compass">N<br>△</div>
-      <div class="map-city">ABU DHABI</div>
-      <div class="map-club">ABU DHABI<br>GOLF CLUB</div>
-      <div class="map-pin"><span></span></div>
-      <div class="map-name">{{ asset.name }}</div>
-    </article>
+    <article class="map-card asset-photo-card"><a href="{% url 'portfolio' %}"><img src="{{ asset_photo }}" alt="{{ asset.name }} community"><span>Explore {{ asset.name }} on the portfolio map ↗</span></a></article>
 
     <article class="fact-card">
       <div class="card-title">Asset fact sheet</div>
       <dl class="facts">
-        <div><dt>Asset</dt><dd>{{ asset.name }}</dd></div>
-        <div><dt>Location</dt><dd>{{ asset.location }}</dd></div>
-        <div><dt>Asset class</dt><dd>{{ asset.asset_class }}</dd></div>
-        <div><dt>Developer</dt><dd>{{ asset.developer }}</dd></div>
-        <div><dt>Buildings</dt><dd>{{ asset.buildings }}</dd></div>
-        <div><dt>Units</dt><dd>{{ asset.units }}</dd></div>
-        <div><dt>Unit mix</dt><dd>{{ asset.unit_mix }}</dd></div>
-        <div><dt>Amenities</dt><dd>{{ asset.amenities }}</dd></div>
+        {% for fact in asset_facts %}<div><dt>{{ fact.label }}</dt><dd>{{ fact.value }} <small class="source-badge synthetic">{{ fact.source }}</small></dd></div>{% endfor %}
       </dl>
     </article>
   </section>
 
+  <p class="notice"><span class="source-badge synthetic">{% if asset.field_sources %}Synthetic demo summary{% else %}Existing demo summary{% endif %}</span> All chart values below are demo assumptions in AED millions. They are not extracted contract facts or totals of the record sample.</p>
   <section class="metrics-grid" id="performance">
     <article class="metric-card ranked-card">
       <div class="metric-title"><span>◎</span>Top 10 tenants by revenue</div>
@@ -114,7 +108,7 @@
     </article>
   </section>
 {% else %}
-  <section class="empty-state"><h1>No portfolio data yet</h1><p>Run <code>python manage.py seed_demo</code> to load the sample asset.</p></section>
+  <section class="empty-state"><h1>No portfolio data yet</h1><p>The demo portfolio has not been populated yet.</p></section>
 {% endif %}
 </main>
 
@@ -124,7 +118,7 @@
   <div class="chat-messages" data-chat-messages>
     <div class="message assistant">{% if asset %}I can review {{ asset.name }}'s dashboard data. Ask me what needs attention, or explore renewals, tenant exposure, and vacancies.{% else %}There are no asset records to analyse yet. Once data is added, I can help review it.{% endif %}</div>
   </div>
-  <form class="chat-form" data-chat-form>
+  <form class="chat-form" data-chat-form data-endpoint="{% url 'asset_chat' asset_slug %}">
     <textarea name="message" rows="2" maxlength="4000" placeholder="Ask a portfolio question…" required></textarea>
     <button type="submit" aria-label="Send message">↑</button>
   </form>

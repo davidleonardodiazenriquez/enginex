@@ -2,3 +2,5 @@ Django==5.2.13
 gunicorn==23.0.0
 psycopg[binary]==3.3.5
 whitenoise==6.11.0
+pypdf==6.18.1
+azure-storage-blob==12.30.1

@@ -7,12 +7,12 @@ from django.utils import timezone
 from core.models import Asset
 
 
-def get_dashboard_asset():
+def get_dashboard_asset(name="Al Rayyana"):
     # Keep chat scoped to exactly the asset displayed by the dashboard.
     return (
         Asset.objects.select_related("metrics")
         .prefetch_related("tenant_revenues", "vacancies")
-        .filter(name="Al Rayyana").first()
+        .filter(name=name).first()
     )
 
 
@@ -79,4 +79,15 @@ def asset_context(asset):
                 "potential_upside_aed_millions": metrics.potential_upside,
             },
         }
+    from core.reporting import portfolio_summary, record_rows
+    context["record_sample"] = portfolio_summary(asset)
+    context["document_evidence"] = []
+    records = asset.lease_records.filter(documents__isnull=False).distinct()[:20]
+    for row in record_rows(records):
+        context["document_evidence"].append({
+            "record":row["record"].code,
+            "association":"A user-selected portfolio association; the PDF is authoritative for its stated premises, not the association.",
+            "fields":[{"name":field["name"],"baseline":field["baseline"],"baseline_source":field["baseline_source"],"evidence":field["evidence"]} for field in row["fields"]],
+        })
+    context["provenance_rules"] = "Legacy metrics are existing demo summaries. Record sample totals include only synthetic records. Document-backed values are separate, quoted from anonymized test PDFs, and may be unreviewed. Do not combine these populations, claim synthetic facts came from contracts, or treat manual map associations as documentary facts. Cite document title and page for document-backed answers."
     return context

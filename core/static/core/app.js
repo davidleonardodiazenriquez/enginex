@@ -38,7 +38,7 @@ form?.addEventListener("submit", async (event) => {
   const pending = addMessage("Thinking…", "assistant pending");
 
   try {
-    const response = await fetch("/api/chat/", {
+    const response = await fetch(form.dataset.endpoint || "/api/chat/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

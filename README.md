@@ -73,19 +73,36 @@ python scripts/setup_database.py
 
 ## Portfolio map
 
-After login, `/` opens the interactive Abu Dhabi portfolio map. The six
-community locations are configured in `core/locations.py`. Al Rayyana opens
-`/assets/al-rayyana/` with the existing metrics and AI assistant; the five other
-locations show previews with "Metrics coming soon" and have no fabricated
-financial records. The map reads Al Rayyana's home/building counts from the
-database. Search, readiness filters, nearby-location grouping, pan/zoom, a reset
-control, and satellite/street styles work on desktop and mobile. Reduced-motion
-preferences disable animated camera moves. No schema migration is required.
+After login, `/` opens the interactive Abu Dhabi portfolio map. All six locations
+open their own asset dashboard after the additive demo population command runs.
+`/reports/` combines synthetic records and document-backed evidence with per-value
+provenance. `/contracts/` supports local PDF upload, Azure Storage selection,
+Astra extraction, manual association, review and source-page navigation.
+
+See [the demo walkthrough](docs/demo-walkthrough.md) for the story, operating
+steps, provenance rules and known limits. The original Al Rayyana summary is
+preserved separately from the new synthetic record sample.
+
+```sh
+python manage.py migrate
+python manage.py populate_portfolio
+python manage.py process_contracts --loop
+```
+
+Run the extraction worker alongside the local web server. The Container App
+starts both automatically through `scripts/start.sh`. Install Poppler locally
+(`brew install poppler` on macOS) for rendered PDF page previews; it is included
+in the container image.
+
+Configure `AZURE_STORAGE_ACCOUNT_NAME`, `AZURE_STORAGE_ACCOUNT_KEY` (a reference
+to the `azure-storage-key` Container App secret), and `AZURE_STORAGE_CONTAINER`.
+The target is `sastestathonun001/storagex`. Local development without Azure uses
+ignored `private-media/` storage. Production requires configured Azure storage.
 
 Leaflet 1.9.4 and its BSD license are bundled under `core/static/core/vendor`.
 Satellite tiles load directly from Esri World Imagery and street tiles from
 OpenStreetMap, with attribution on the map. These require browser internet access.
-If tiles fail, the location list and Al Rayyana metrics link remain usable.
+If tiles fail, the location list and report links remain usable.
 
 Design reference: [World of Aldar](https://world.aldar.com/uae).
 Property photos are from Aldar's [Al Rayyana](https://www.aldar.com/en/explore-aldar/businesses/development/residential/other-destinations/al-rayyana),
@@ -119,12 +136,15 @@ the dashboard and sends its facts, tenant revenue shares, vacancies, and renewal
 and rent metrics to the model. Amounts are explicitly labelled as AED millions;
 totals are calculated by the application. The assistant identifies the sample
 data, cites dashboard sections, and explains missing information rather than
-inventing it. This covers the current dashboard asset, not other database tables
-or a portfolio-wide query interface. It cannot execute SQL or change records.
+inventing it. This covers the selected dashboard asset, its synthetic record sample, and the
+latest successful extractions for up to 20 associated document records. The
+assistant receives source labels, page quotations and review status. Unassigned
+contracts remain in the contract workspace/report rather than being silently
+assigned to a map location. It cannot execute SQL or change records.
 
 The browser includes the last three successful question/answer pairs for
 follow-ups. History stays in the current page and resets on refresh; database
-data is read again for every message. No database migration is needed for chat.
+data is read again for every message. The document-backed demo adds an additive schema migration.
 
 For Astra, use `AZURE_AI_FOUNDRY_ENDPOINT=https://<resource>.openai.azure.com/openai/v1/`
 and set `AZURE_AI_FOUNDRY_DEPLOYMENT` to the deployment name, such as `gpt-6-astra`.

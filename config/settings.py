@@ -126,6 +126,15 @@ AZURE_AI_FOUNDRY_API_VERSION = os.getenv(
     "AZURE_AI_FOUNDRY_API_VERSION", "2024-10-21"
 )
 
+AZURE_STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME", "")
+AZURE_STORAGE_ACCOUNT_KEY = os.getenv("AZURE_STORAGE_ACCOUNT_KEY", "")
+AZURE_STORAGE_CONTAINER = os.getenv("AZURE_STORAGE_CONTAINER", "storagex")
+MEDIA_ROOT = BASE_DIR / "private-media"
+CONTRACT_MAX_BYTES = 25 * 1024 * 1024
+CONTRACT_MAX_PAGES = 80
+DATA_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -140,4 +149,5 @@ LOGGING = {
         "handlers": ["console"],
         "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
     },
+    "loggers": {"azure": {"level": "WARNING"}},
 }

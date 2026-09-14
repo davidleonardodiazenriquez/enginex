@@ -1,3 +1,6 @@
+import uuid
+
+from django.conf import settings
 from django.db import models
 
 
@@ -10,6 +13,7 @@ class Asset(models.Model):
     units = models.PositiveIntegerField()
     unit_mix = models.CharField(max_length=160)
     amenities = models.TextField()
+    field_sources = models.JSONField(default=dict, blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -79,3 +83,84 @@ class PortfolioMetrics(models.Model):
 
     def __str__(self):
         return f"Metrics for {self.asset}"
+
+
+class LeaseRecord(models.Model):
+    """A stable portfolio record. Baseline values are never replaced by extraction."""
+
+    code = models.CharField(max_length=80, unique=True)
+    asset = models.ForeignKey(Asset, null=True, blank=True, on_delete=models.PROTECT, related_name="lease_records")
+    origin = models.CharField(max_length=20, choices=[("synthetic", "Synthetic demo"), ("document", "Document-backed")])
+    data = models.JSONField(default=dict, blank=True)
+    as_of = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["code"]
+
+    def __str__(self):
+        return f"{self.code} · {self.asset.name if self.asset else 'Unassigned location'}"
+
+
+class ContractDocument(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=240)
+    sha256 = models.CharField(max_length=64, unique=True)
+    storage_key = models.CharField(max_length=500)
+    original_blob = models.CharField(max_length=1024, blank=True)
+    size_bytes = models.PositiveIntegerField()
+    page_count = models.PositiveIntegerField()
+    source_label = models.CharField(max_length=100, default="Anonymized test contract")
+    record = models.ForeignKey(LeaseRecord, on_delete=models.PROTECT, related_name="documents")
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
+class ExtractionRun(models.Model):
+    document = models.ForeignKey(ContractDocument, on_delete=models.CASCADE, related_name="runs")
+    status = models.CharField(max_length=20, default="queued", choices=[
+        ("queued", "Queued"), ("running", "Extracting"), ("completed", "Ready for review"),
+        ("failed", "Needs attention"),
+    ])
+    model = models.CharField(max_length=100, blank=True)
+    pages = models.JSONField(default=list, blank=True)
+    warnings = models.JSONField(default=list, blank=True)
+    error = models.TextField(blank=True)
+    requested_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True)
+    finished_at = models.DateTimeField(null=True)
+
+    class Meta:
+        ordering = ["-id"]
+        constraints = [models.UniqueConstraint(fields=["document"], condition=models.Q(status__in=["queued", "running"]), name="one_active_extraction_per_document")]
+
+
+class ExtractedField(models.Model):
+    run = models.ForeignKey(ExtractionRun, on_delete=models.CASCADE, related_name="fields")
+    name = models.CharField(max_length=60)
+    value = models.TextField()
+    page = models.PositiveIntegerField()
+    quote = models.TextField()
+    review_status = models.CharField(max_length=15, default="pending", choices=[("pending", "Unreviewed extraction"), ("confirmed", "Reviewed extraction"), ("rejected", "Rejected")])
+    reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    reviewed_at = models.DateTimeField(null=True)
+
+    class Meta:
+        ordering = ["name", "page", "id"]
+
+
+class AssociationEvent(models.Model):
+    document = models.ForeignKey(ContractDocument, on_delete=models.CASCADE, related_name="associations")
+    previous_record_code = models.CharField(max_length=80)
+    record_code = models.CharField(max_length=80)
+    location_name = models.CharField(max_length=120, blank=True)
+    reason = models.TextField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
