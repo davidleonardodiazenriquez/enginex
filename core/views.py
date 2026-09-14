@@ -12,6 +12,7 @@ from core import foundry
 from core.locations import LOCATIONS, map_locations
 from core.portfolio import asset_context, get_dashboard_asset
 from core.reporting import portfolio_summary
+from core.property_scene import property_scene
 
 
 def health(request):
@@ -51,6 +52,7 @@ def dashboard(request, asset_slug="al-rayyana"):
             "foundry_configured": foundry.is_configured(),
             "asset_slug": asset_slug,
             "asset_photo": static("core/locations/"+location["image"]),
+            "property_scene": property_scene(asset, asset_slug) if asset else None,
             "summary": portfolio_summary(asset) if asset else None,
             "asset_facts": [{"label":field.replace("_"," ").title(),"value":getattr(asset,field),"source":asset.field_sources.get(field,"Existing demo")} for field in ("name","location","asset_class","developer","buildings","units","unit_mix","amenities")] if asset else [],
         },

@@ -21,6 +21,20 @@ these contracts to a residential location merely to make the map look complete.
 
 ## Present the demo
 
+Each location dashboard includes a **Spatial explorer** with a distinct 3D
+community scene. Drag to orbit, scroll/pinch to zoom, switch to top view or
+golden-hour lighting, or expand the view (Escape closes it). Keyboard users can
+rotate with arrow keys, zoom with +/−, and select the B01–B06 zone links.
+
+Selecting a model zone displays its synthetic record count, occupancy and annual
+rent, with a link to that unit-code group's filtered report. These read-only
+figures come from synthetic records at the selected asset. Shapes, heights,
+positions and the six visual zones are illustrative, not a surveyed site plan
+or a claim about actual building counts. A future surveyed GLB/glTF model can
+replace the procedural geometry after a supported building-to-record mapping
+is available. The graphics library is served by the app; a community photo and
+report links remain available if WebGL is unavailable.
+
 1. Open the portfolio map and select any of the six locations. Open its metrics
    and record report. Point out the synthetic labels and reporting date.
 2. Open **Contract workspace**. Upload up to ten approved anonymized PDFs, or

@@ -1,0 +1,41 @@
+<section class="spatial-explorer" aria-label="Interactive 3D view of {{ asset.name }}" data-spatial-explorer>
+  <header class="spatial-header">
+    <div class="spatial-title"><span class="spatial-cube" aria-hidden="true">◇</span><div><p>SPATIAL EXPLORER</p><h2>A new perspective.</h2></div></div>
+    <div class="spatial-toolbar" aria-label="3D view controls">
+      <div class="spatial-segment"><button type="button" data-view="perspective" aria-pressed="true">Perspective</button><button type="button" data-view="top" aria-pressed="false">Top view</button></div>
+      <button type="button" class="spatial-icon-button" data-scene-action="light" aria-pressed="false" title="Switch to golden hour" aria-label="Switch to golden hour">☀</button>
+      <button type="button" class="spatial-icon-button" data-scene-action="expand" aria-expanded="false" title="Expand 3D view" aria-label="Expand 3D view">⤢</button>
+    </div>
+  </header>
+  <div class="spatial-body">
+    <div class="spatial-stage" data-scene-stage>
+      <img class="spatial-fallback" src="{{ asset_photo }}" alt="{{ asset.name }} community" data-scene-fallback>
+      <div class="spatial-canvas" data-scene-canvas></div>
+      <div class="spatial-location"><span class="spatial-live-dot"></span><div><strong>{{ asset.name }}</strong><small>{{ asset.location }}</small></div></div>
+      <span class="spatial-model-badge">ILLUSTRATIVE 3D MODEL</span>
+      <div class="spatial-loading" data-scene-loading><span class="spatial-loader"></span><strong>Preparing your perspective…</strong></div>
+      <div class="spatial-error" data-scene-error hidden><strong>Explore the community</strong><p>The 3D view is unavailable in this browser. The photo and zone reports remain available below.</p></div>
+      <div class="spatial-hover" data-scene-tooltip hidden></div>
+      <div class="spatial-navigation" aria-label="Camera controls"><button type="button" data-scene-action="in" aria-label="Zoom in">+</button><button type="button" data-scene-action="out" aria-label="Zoom out">−</button><button type="button" data-scene-action="reset" aria-label="Reset camera" title="Reset camera">↺</button></div>
+      <div class="spatial-stage-footer"><span data-scene-help>Drag to orbit · Pinch or scroll to zoom · Select a building</span><button type="button" data-scene-action="orbit" aria-pressed="false"><span aria-hidden="true">↻</span> Auto orbit</button></div>
+      <noscript><p class="spatial-noscript">Enable JavaScript to explore in 3D. Use the zone links for the reports.</p></noscript>
+    </div>
+    <aside class="spatial-inspector">
+      <p class="spatial-kicker">EXPLORE THE COMMUNITY</p>
+      <h3>Space meets<br> <em>the numbers.</em></h3>
+      <p class="spatial-intro">Select a building or zone to explore the portfolio sample behind it.</p>
+      <div class="spatial-zones" aria-label="Select a demo model zone">
+        {% for zone in property_scene.zones %}<a href="{{ zone.report_url }}" data-zone="{{ zone.code }}" aria-label="Select demo zone {{ zone.code }}" aria-current="false">{{ zone.code }}</a>{% endfor %}
+      </div>
+      <div class="spatial-selection" aria-live="polite" aria-atomic="true">
+        <div class="spatial-selection-heading"><span class="spatial-selection-dot"></span><strong data-zone-title>Whole community</strong></div>
+        <p data-zone-description>6 illustrative model zones</p>
+        <dl><div><dt>Synthetic records</dt><dd data-zone-records>{{ summary.synthetic_records }}</dd></div><div><dt>Sample occupancy</dt><dd data-zone-occupancy>{{ summary.occupancy_pct|default_if_none:'—' }}%</dd></div><div class="spatial-rent"><dt>Synthetic annual rent</dt><dd data-zone-rent>AED {{ summary.annual_rent|floatformat:"0g" }}</dd></div></dl>
+        <a class="spatial-report-link" data-zone-report href="{% url 'portfolio_report' %}?asset={{ asset.pk }}&source=synthetic">Explore these records <span>↗</span></a>
+      </div>
+      <p class="spatial-provenance"><span>◇</span> Concept geometry, not a surveyed model. Zones group synthetic unit codes B01–B06; building shapes and positions are illustrative.</p>
+    </aside>
+  </div>
+  <footer class="spatial-footer"><span><i></i> Architecture & landscape</span><span><i></i> Selected demo zone</span><a href="#performance">Continue to performance ↓</a></footer>
+</section>
+{{ property_scene|json_script:"property-scene-data" }}

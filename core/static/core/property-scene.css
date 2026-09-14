@@ -1,0 +1,89 @@
+.dashboard-heading { align-items:flex-start; flex-wrap:wrap; }
+.dashboard-heading>div:first-child { min-width:0; flex:1 1 550px; }
+.dashboard-heading h1 { font-size:clamp(2.1rem,3.5vw,3.7rem); overflow-wrap:anywhere; line-height:1.15; }
+.dashboard-heading h1 span { display:block; margin:10px 0; font:600 11px/1.4 Inter,system-ui,sans-serif; letter-spacing:.18em; }
+.dashboard-heading .heading-actions { flex-wrap:wrap; }
+.dashboard-heading .button { text-decoration:none; text-align:center; }
+.overview-grid { grid-template-columns:.8fr 1.6fr; margin-top:18px; }
+.overview-grid .map-card { min-height:280px; }
+.overview-grid .facts { display:grid; grid-template-columns:1fr 1fr; gap:0 24px; }
+.overview-grid .fact-card { min-height:280px; }
+.spatial-explorer { margin:25px 0 18px; background:#f8faf6; border:1px solid #d4dfd9; border-radius:18px; overflow:hidden; box-shadow:0 20px 50px #173d4210; }
+.spatial-header { display:flex; align-items:center; justify-content:space-between; padding:21px 27px; gap:20px; border-bottom:1px solid #dbe3df; }
+.spatial-title { display:flex; align-items:center; gap:15px; }
+.spatial-cube { font:42px Georgia,serif; color:#a48343; }
+.spatial-title p { color:#6b817b; font-size:9px; letter-spacing:2.3px; font-weight:700; margin:0 0 7px; }
+.spatial-title h2 { font:400 27px/1.15 Georgia,serif; margin:0; color:#173e42; letter-spacing:-.6px; }
+.spatial-toolbar { display:flex; align-items:center; gap:10px; }
+.spatial-toolbar button,.spatial-navigation button { border:1px solid #d5ded6; background:#fff9; color:#30514d; border-radius:7px; }
+.spatial-segment { display:flex; background:#e9eee8; border:1px solid #d9e1d9; padding:4px; border-radius:8px; }
+.spatial-segment button { background:transparent; border:0; padding:10px 15px; font-size:11px; font-weight:600; white-space:nowrap; }
+.spatial-segment button[aria-pressed=true] { background:#fff; box-shadow:0 2px 5px #183c3610; color:#193e35; }
+.spatial-icon-button { width:39px; height:39px; font-size:21px; }
+.spatial-toolbar button[aria-pressed=true].spatial-icon-button { background:#f2e3c4; border-color:#ba944c; }
+.spatial-body { display:grid; grid-template-columns:minmax(0,1fr) 290px; }
+.spatial-stage { min-width:0; height:600px; position:relative; overflow:hidden; background:#e3ece8; isolation:isolate; }
+.spatial-canvas { position:absolute; inset:0; }
+.spatial-canvas canvas { display:block; width:100%; height:100%; outline-offset:-5px; cursor:grab; touch-action:none; }
+.spatial-canvas canvas:active { cursor:grabbing; }
+.spatial-fallback { height:100%; width:100%; object-fit:cover; position:absolute; inset:0; }
+.spatial-fallback[hidden] { display:none; }
+.spatial-location { position:absolute; top:25px; left:26px; display:flex; gap:10px; pointer-events:none; padding:10px 14px; border:1px solid #ffffff66; border-radius:8px; background:#ffffffb8; backdrop-filter:blur(10px); }
+.spatial-live-dot { width:6px; height:6px; background:#67897c; margin-top:6px; border-radius:50%; }
+.spatial-location strong { display:block; color:#25463c; font-size:13px; font-weight:650; }
+.spatial-location small { display:block; color:#697c70; font-size:9px; margin-top:5px; }
+.spatial-model-badge { position:absolute; top:31px; right:25px; font-size:8px; letter-spacing:1.5px; color:#62766c; border:1px solid #93aaa077; border-radius:5px; padding:8px; background:#f6faf377; pointer-events:none; }
+.spatial-loading { position:absolute; inset:0; background:#e3ece8; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; color:#45665b; }
+.spatial-loading[hidden],.spatial-error[hidden],.spatial-hover[hidden] { display:none; }
+.spatial-loading strong { font:400 21px Georgia,serif; }
+.spatial-loader { border:1px solid #bdcfc3; border-top-color:#a8894b; width:40px; height:40px; border-radius:50%; animation:spatial-spin 1.3s linear infinite; }
+@keyframes spatial-spin { to { transform:rotate(360deg); } }
+.spatial-error { position:absolute; left:25px; right:25px; bottom:80px; max-width:380px; padding:18px; border-radius:10px; background:#fffffff0; color:#204b42; font-size:13px; line-height:1.6; }
+.spatial-error p { margin-bottom:0; }
+.spatial-hover { position:absolute; pointer-events:none; padding:10px 14px; background:#112e33ed; color:#fff; border:1px solid #ffffff22; border-radius:7px; font-size:11px; box-shadow:0 5px 20px #0a34232a; z-index:2; }
+.spatial-navigation { position:absolute; right:24px; bottom:83px; display:grid; gap:5px; }
+.spatial-navigation button { width:36px; height:36px; font-size:20px; backdrop-filter:blur(10px); }
+.spatial-stage-footer { position:absolute; left:24px; right:24px; bottom:24px; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.spatial-stage-footer>span { color:#49665d; font-size:10px; padding:8px 11px; border-radius:5px; background:#f9fcf49c; }
+.spatial-stage-footer button { border:1px solid #96ac9d; border-radius:20px; background:#f8fcf6b8; color:#375347; font-size:10px; padding:9px 13px; white-space:nowrap; }
+.spatial-stage-footer button[aria-pressed=true] { background:#234b3e; color:#fff; }
+.spatial-stage-footer button span { font-size:14px; margin-right:5px; }
+.spatial-inspector { background:#102b32; color:#fff; padding:30px 25px 23px; }
+.spatial-kicker { font-size:8px; letter-spacing:1.6px; color:#b7c7c0; margin:0 0 18px; }
+.spatial-inspector h3 { font:400 30px/1.13 Georgia,serif; letter-spacing:-.5px; margin:0 0 14px; }
+.spatial-inspector h3 em { font-weight:400; color:#d2b980; }
+.spatial-intro { color:#a7bdb6; font-size:11px; line-height:1.8; margin:0 0 21px; }
+.spatial-zones { display:grid; grid-template-columns:repeat(6,1fr); gap:5px; margin-bottom:24px; }
+.spatial-zones a { border:1px solid #456059; border-radius:5px; color:#bacec5; padding:9px 0; text-align:center; font-size:9px; text-decoration:none; }
+.spatial-zones a:hover { border-color:#d1b77f; color:#fff; }
+.spatial-zones a[aria-current=true] { background:#ceb078; color:#183d39; border-color:#ceb078; }
+.spatial-selection { border-top:1px solid #3a5350; padding-top:20px; }
+.spatial-selection-heading { display:flex; align-items:center; gap:8px; font-size:13px; }
+.spatial-selection-dot { width:6px; height:6px; border-radius:50%; background:#d4b980; }
+.spatial-selection>p { font-size:10px; color:#a6bcb1; margin:8px 0 20px; }
+.spatial-selection dl { margin:0; display:grid; grid-template-columns:1fr 1fr; gap:20px 10px; }
+.spatial-selection dt { color:#b3c6bc; font-size:9px; margin-bottom:8px; }
+.spatial-selection dd { font:400 27px Georgia,serif; margin:0; }
+.spatial-selection .spatial-rent { grid-column:1/-1; }
+.spatial-selection .spatial-rent dd { font-size:23px; }
+.spatial-report-link { display:flex; justify-content:space-between; gap:12px; margin-top:24px; padding:13px 14px; background:#dfcca3; color:#173d38; text-decoration:none; font-size:11px; font-weight:700; border-radius:5px; }
+.spatial-report-link:hover { background:#ecdab3; }
+.spatial-provenance { border-top:1px solid #3a5350; padding-top:17px; color:#9fb6ae; font-size:9px; line-height:1.7; margin:23px 0 0; }
+.spatial-provenance span { color:#d4bc89; margin-right:5px; }
+.spatial-footer { display:flex; align-items:center; flex-wrap:wrap; gap:22px; padding:17px 27px; font-size:10px; color:#728579; border-top:1px solid #d6e0d7; }
+.spatial-footer span { display:flex; align-items:center; gap:7px; }
+.spatial-footer i { width:7px; height:7px; border-radius:2px; background:#8da497; }
+.spatial-footer span:nth-child(2) i { background:#c4a064; }
+.spatial-footer a { color:#3c6052; text-decoration:none; margin-left:auto; }
+.spatial-explorer :focus-visible { outline:2px solid #d2a958; outline-offset:3px; }
+.spatial-explorer.is-expanded { position:fixed; inset:15px; z-index:60; margin:0; display:flex; flex-direction:column; }
+.spatial-explorer.is-expanded .spatial-body { flex:1; min-height:0; }
+.spatial-explorer.is-expanded .spatial-stage { height:100%; }
+.spatial-explorer.is-expanded .spatial-inspector { overflow:auto; }
+.spatial-noscript { position:absolute; bottom:0; background:white; padding:12px; font-size:12px; }
+[data-scene-state=unavailable] .spatial-canvas,[data-scene-state=unavailable] .spatial-navigation,[data-scene-state=unavailable] .spatial-stage-footer { display:none; }
+@media(min-width:1500px) { .spatial-stage { height:660px; }.spatial-body { grid-template-columns:minmax(0,1fr) 325px; }.spatial-inspector { padding:36px 30px; }.spatial-inspector h3 { font-size:35px; } }
+@media(max-width:1050px) { .spatial-body { grid-template-columns:minmax(0,1fr) 265px; }.spatial-stage { height:570px; }.spatial-inspector { padding:25px 20px; }.spatial-model-badge { top:88px; left:26px; right:auto; }.spatial-stage-footer { align-items:flex-start; flex-direction:column; gap:8px; }.overview-grid .facts { display:block; } }
+@media(max-width:760px) { .spatial-body { grid-template-columns:1fr; }.spatial-header { padding:18px; flex-wrap:wrap; gap:17px; }.spatial-title h2 { font-size:25px; }.spatial-toolbar { width:100%; justify-content:flex-end; }.spatial-segment { margin-right:auto; }.spatial-stage { height:440px; }.spatial-location { top:18px; left:18px; max-width:calc(100% - 36px); }.spatial-model-badge { top:83px; left:18px; }.spatial-inspector { padding:25px; }.spatial-inspector h3 { font-size:28px; }.spatial-inspector h3 br { display:none; }.spatial-intro { max-width:440px; }.spatial-zones { max-width:350px; }.spatial-selection dl { grid-template-columns:1fr 1fr 1.5fr; }.spatial-selection .spatial-rent { grid-column:auto; }.spatial-selection .spatial-rent dd { font-size:20px; }.spatial-footer { padding:17px; gap:15px; }.spatial-footer a { margin-left:0; }.overview-grid { grid-template-columns:1fr; }.overview-grid .map-card { height:220px; min-height:220px; }.spatial-explorer.is-expanded { inset:0; border-radius:0; overflow:auto; display:block; }.spatial-explorer.is-expanded .spatial-stage { height:65vh; }.spatial-explorer.is-expanded .spatial-body { display:block; } }
+@media(max-width:430px) { .spatial-selection dl { grid-template-columns:1fr 1fr; }.spatial-selection .spatial-rent { grid-column:1/-1; }.spatial-stage { height:400px; }.spatial-stage-footer { left:16px; right:16px; bottom:16px; }.spatial-stage-footer>span { font-size:9px; }.spatial-navigation { right:16px; }.spatial-inspector { padding:23px; }.spatial-explorer { border-radius:12px; }.spatial-title h2 { font-size:24px; } }
+@media(prefers-reduced-motion:reduce) { .spatial-loader { animation:none; } }

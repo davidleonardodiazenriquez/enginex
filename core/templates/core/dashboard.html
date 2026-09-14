@@ -1,7 +1,7 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block title %}Asset Overview · Enginex{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'core/workspace.css' %}">{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'core/workspace.css' %}"><link rel="stylesheet" href="{% static 'core/property-scene.css' %}">{% endblock %}
 {% block body_class %}dashboard-page{% endblock %}
 {% block content %}
 <header class="topbar">
@@ -39,19 +39,8 @@
     <article><small>Explore the records</small><strong>{{ summary.records }}</strong><a href="{% url 'portfolio_report' %}?asset={{ asset.pk }}">Open this location’s report ↗</a></article>
   </section>
   <p class="workspace-footnote">Synthetic sample totals are independent of the summary charts below. PDFs support their quoted values only; a manual association does not change the premises stated in a contract.</p>
+  {% include 'core/property_scene.html' %}
   <section class="overview-grid">
-    <article class="property-card">
-      <div class="property-label">
-        <span class="line-icon">▥</span>
-        <div><strong>{{ asset.name }}</strong><small>{{ asset.location }}</small></div>
-      </div>
-      <div class="sky-glow"></div>
-      <div class="buildings" aria-label="Stylized residential asset illustration">
-        <span class="tower tower-one"></span><span class="tower tower-two"></span><span class="tower tower-three"></span><span class="tower tower-four"></span>
-      </div>
-      <div class="landscape"><span></span><span></span><span></span><span></span><span></span></div>
-    </article>
-
     <article class="map-card asset-photo-card"><a href="{% url 'portfolio' %}"><img src="{{ asset_photo }}" alt="{{ asset.name }} community"><span>Explore {{ asset.name }} on the portfolio map ↗</span></a></article>
 
     <article class="fact-card">
@@ -125,4 +114,8 @@
 </aside>
 <meta name="csrf-token" content="{{ csrf_token }}">
 {% endblock %}
-{% block scripts %}<script src="{% static 'core/app.js' %}" defer></script>{% endblock %}
+{% block scripts %}<script src="{% static 'core/app.js' %}" defer></script>
+{% if asset %}
+<script type="importmap">{"imports":{"three":"{% static 'core/vendor/three/three.module.js' %}","three/controls":"{% static 'core/vendor/three/OrbitControls.js' %}"}}</script>
+<script src="{% static 'core/property-scene-loader.js' %}" defer></script>
+{% endif %}{% endblock %}
