@@ -62,3 +62,15 @@ POSTGRES_USER=your-admin-user \
 POSTGRES_DB=enginex \
 python scripts/setup_database.py
 ```
+
+## Azure AI Foundry chat
+
+The dashboard chat uses a server-side proxy. Configure these Container App
+environment variables:
+
+- `AZURE_AI_FOUNDRY_ENDPOINT`
+- `AZURE_AI_FOUNDRY_API_KEY` (secret reference)
+- `AZURE_AI_FOUNDRY_DEPLOYMENT`
+- `AZURE_AI_FOUNDRY_API_VERSION` (optional; defaults to `2024-10-21`)
+
+The API key is never returned to the browser.

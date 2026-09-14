@@ -1,0 +1,134 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block title %}Asset Overview · Enginex{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
+{% block content %}
+<header class="topbar">
+  <a class="brand brand-light" href="{% url 'dashboard' %}"><span class="brand-mark">E</span><span>ENGINEX</span></a>
+  <nav class="topnav" aria-label="Primary navigation">
+    <a class="active" href="{% url 'dashboard' %}">Portfolio</a>
+    <a href="#performance">Performance</a>
+    <a href="#assistant">AI insights</a>
+  </nav>
+  <div class="account-menu">
+    <span class="account-avatar">{{ request.user.username|first|upper }}</span>
+    <span>{{ request.user.username }}</span>
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form>
+  </div>
+</header>
+
+<main class="dashboard-shell">
+{% if asset %}
+  <section class="dashboard-heading">
+    <div>
+      <p class="eyebrow">PORTFOLIO COMPOSITION · SAMPLE DATA</p>
+      <h1>{{ asset.name }} <span>Asset overview</span></h1>
+      <p>Live composition, leasing exposure, and renewal performance.</p>
+    </div>
+    <div class="heading-actions">
+      <button class="button button-secondary">Export fact sheet</button>
+      <button class="button button-primary" data-chat-open>Ask Enginex AI</button>
+    </div>
+  </section>
+
+  <section class="overview-grid">
+    <article class="property-card">
+      <div class="property-label">
+        <span class="line-icon">▥</span>
+        <div><strong>{{ asset.name }}</strong><small>{{ asset.location }}</small></div>
+      </div>
+      <div class="sky-glow"></div>
+      <div class="buildings" aria-label="Stylized residential asset illustration">
+        <span class="tower tower-one"></span><span class="tower tower-two"></span><span class="tower tower-three"></span><span class="tower tower-four"></span>
+      </div>
+      <div class="landscape"><span></span><span></span><span></span><span></span><span></span></div>
+    </article>
+
+    <article class="map-card">
+      <div class="map-grid"></div>
+      <span class="map-road road-a"></span><span class="map-road road-b"></span><span class="map-road road-c"></span>
+      <div class="map-compass">N<br>△</div>
+      <div class="map-city">ABU DHABI</div>
+      <div class="map-club">ABU DHABI<br>GOLF CLUB</div>
+      <div class="map-pin"><span></span></div>
+      <div class="map-name">{{ asset.name }}</div>
+    </article>
+
+    <article class="fact-card">
+      <div class="card-title">Asset fact sheet</div>
+      <dl class="facts">
+        <div><dt>Asset</dt><dd>{{ asset.name }}</dd></div>
+        <div><dt>Location</dt><dd>{{ asset.location }}</dd></div>
+        <div><dt>Asset class</dt><dd>{{ asset.asset_class }}</dd></div>
+        <div><dt>Developer</dt><dd>{{ asset.developer }}</dd></div>
+        <div><dt>Buildings</dt><dd>{{ asset.buildings }}</dd></div>
+        <div><dt>Units</dt><dd>{{ asset.units }}</dd></div>
+        <div><dt>Unit mix</dt><dd>{{ asset.unit_mix }}</dd></div>
+        <div><dt>Amenities</dt><dd>{{ asset.amenities }}</dd></div>
+      </dl>
+    </article>
+  </section>
+
+  <section class="metrics-grid" id="performance">
+    <article class="metric-card ranked-card">
+      <div class="metric-title"><span>◎</span>Top 10 tenants by revenue</div>
+      <ol class="rank-list">
+        {% for item in asset.tenant_revenues.all %}
+        <li><span class="rank">{{ item.rank }}</span><span class="label">{{ item.tenant_name }}</span><span class="bar"><i style="--value: {{ item.revenue_share }}"></i></span><strong>{{ item.revenue_share|floatformat:1 }}%</strong></li>
+        {% endfor %}
+      </ol>
+      <div class="metric-total"><span>Top 10 total</span><strong>{{ tenant_total|floatformat:1 }}%</strong></div>
+    </article>
+
+    <article class="metric-card ranked-card">
+      <div class="metric-title"><span>％</span>Top 10 vacancies by revenue</div>
+      <ol class="rank-list vacancy-list">
+        {% for item in asset.vacancies.all %}
+        <li><span class="rank">{{ item.rank }}</span><span class="label">{{ item.unit_name }}</span><span class="bar"><i style="--value: {{ item.revenue_share }}"></i></span><strong>{{ item.revenue_share|floatformat:1 }}%</strong></li>
+        {% endfor %}
+      </ol>
+      <div class="metric-total"><span>Top 10 total</span><strong>{{ vacancy_total|floatformat:1 }}%</strong></div>
+    </article>
+
+    <article class="metric-card donut-card">
+      <div class="metric-title"><span>✓</span>Due renewals completed</div>
+      <div class="donut" style="--percentage: {{ asset.metrics.due_completed_pct }}"><div><strong>{{ asset.metrics.due_completed_pct|floatformat:0 }}%</strong><span>completed</span></div></div>
+      <div class="legend"><span><i class="navy"></i>Completed</span><strong>AED {{ asset.metrics.due_completed_value|floatformat:0 }}M</strong><span><i class="gray"></i>Not completed</span><strong>AED {{ asset.metrics.due_incomplete_value|floatformat:0 }}M</strong></div>
+      <div class="metric-total"><span>Total due</span><strong>AED {{ asset.metrics.total_due|floatformat:0 }}M</strong></div>
+    </article>
+
+    <article class="metric-card donut-card">
+      <div class="metric-title"><span>▣</span>Upcoming renewals to year-end</div>
+      <div class="donut gold" style="--percentage: {{ asset.metrics.upcoming_signed_pct }}"><div><small>AED</small><strong>{{ asset.metrics.total_upcoming|floatformat:0 }}M</strong><span>by revenue</span></div></div>
+      <div class="legend"><span><i class="navy"></i>Signed</span><strong>AED {{ asset.metrics.upcoming_signed_value|floatformat:0 }}M</strong><span><i class="gold-dot"></i>Not signed</span><strong>AED {{ asset.metrics.upcoming_unsigned_value|floatformat:0 }}M</strong></div>
+      <div class="metric-total"><span>Total upcoming</span><strong>AED {{ asset.metrics.total_upcoming|floatformat:0 }}M</strong></div>
+    </article>
+
+    <article class="metric-card reversion-card">
+      <div class="metric-title"><span>↗</span>Reversionary potential</div>
+      <div class="reversion-number">+{{ asset.metrics.reversionary_pct|floatformat:1 }}%</div>
+      <p>Overall potential</p>
+      <div class="rent-row"><span>In-place rent<small>AED {{ asset.metrics.in_place_rent|floatformat:0 }}M</small></span><i class="rent-bar current"></i></div>
+      <div class="rent-row"><span>Market rent<small>AED {{ asset.metrics.market_rent|floatformat:0 }}M</small></span><i class="rent-bar market"></i></div>
+      <div class="upside"><span>Potential upside</span><strong>AED {{ asset.metrics.potential_upside|floatformat:0 }}M</strong></div>
+    </article>
+  </section>
+{% else %}
+  <section class="empty-state"><h1>No portfolio data yet</h1><p>Run <code>python manage.py seed_demo</code> to load the sample asset.</p></section>
+{% endif %}
+</main>
+
+<button class="chat-launcher" data-chat-open aria-label="Open Enginex AI"><span>✦</span></button>
+<aside class="chat-panel" id="assistant" aria-hidden="true">
+  <header><div><span class="chat-symbol">✦</span><div><strong>Enginex AI</strong><small>{% if foundry_configured %}Connected to Azure AI Foundry{% else %}Awaiting Foundry configuration{% endif %}</small></div></div><button data-chat-close aria-label="Close chat">×</button></header>
+  <div class="chat-messages" data-chat-messages>
+    <div class="message assistant">Ask me about leasing exposure, renewals, or portfolio performance.</div>
+  </div>
+  <form class="chat-form" data-chat-form>
+    <textarea name="message" rows="2" maxlength="4000" placeholder="Ask a portfolio question…" required></textarea>
+    <button type="submit" aria-label="Send message">↑</button>
+  </form>
+</aside>
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+{% block scripts %}<script src="{% static 'core/app.js' %}" defer></script>{% endblock %}

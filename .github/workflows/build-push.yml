@@ -47,14 +47,14 @@ jobs:
           ignore-unfixed: true
           exit-code: "1"
       - name: Sign in to Azure with OIDC
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && vars.AZURE_CLIENT_ID != ''
         uses: azure/login@v2
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - name: Push image to Azure Container Registry
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && vars.AZURE_CLIENT_ID != ''
         shell: bash
         run: |
           login_server=$(az acr show --name "$ACR_NAME" --query loginServer --output tsv)
@@ -65,7 +65,7 @@ jobs:
           docker push "$login_server/$IMAGE_NAME:latest"
 
   deploy:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && vars.AZURE_CLIENT_ID != ''
     runs-on: ubuntu-latest
     needs: build
     environment: production

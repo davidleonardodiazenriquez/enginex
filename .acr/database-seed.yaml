@@ -1,0 +1,16 @@
+version: v1.1.0
+
+steps:
+  - cmd: >-
+      $Registry/enginex:{{.Values.IMAGE_TAG}}
+      python /app/manage.py seed_demo
+    env:
+      - POSTGRES_HOST={{.Values.POSTGRES_HOST}}
+      - POSTGRES_PORT={{.Values.POSTGRES_PORT}}
+      - POSTGRES_DB={{.Values.POSTGRES_DB}}
+      - POSTGRES_USER={{.Values.POSTGRES_USER}}
+      - POSTGRES_SSLMODE=require
+      - POSTGRES_PASSWORD={{.Values.POSTGRES_PASSWORD}}
+      - DEMO_USERNAME={{.Values.DEMO_USERNAME}}
+      - DEMO_PASSWORD={{.Values.DEMO_PASSWORD}}
+      - PYTHONPATH=/app
