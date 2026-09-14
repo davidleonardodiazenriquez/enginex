@@ -26,8 +26,16 @@ docker run --rm -p 8000:8000 \
 
 ## CI/CD configuration
 
-The GitHub Actions workflow tests and scans every change. Pushes to `main` also
-publish images to `acrtestathonun001` using the commit SHA and `latest` tags.
+The GitHub Actions workflow tests and builds changes. Security scans and the
+runtime-package assertion are disabled for this hackathon at the project owner's
+request. When Azure workload identity is configured, pushes to `main` also
+publish images to `acrtestathonun001` using the commit SHA and `latest` tags and
+deploy to Container Apps.
+
+Until that identity is configured, releases use the developer's signed-in Azure
+CLI session to build in ACR and update the Container App. Run relevant tests and
+verify the changed behavior live. Workflow or documentation changes alone do not
+require rebuilding and redeploying the application.
 
 Configure these GitHub repository variables for Azure workload identity
 federation:
