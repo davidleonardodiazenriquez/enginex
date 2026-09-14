@@ -257,5 +257,5 @@ class ChatEndpointTests(TestCase):
 
     def test_dashboard_does_not_claim_connectivity_from_configuration(self):
         response = self.client.get(reverse("dashboard"))
-        self.assertContains(response, "Your portfolio assistant")
+        self.assertContains(response, "No asset data available")
         self.assertNotContains(response, "Connected to Azure AI Foundry")

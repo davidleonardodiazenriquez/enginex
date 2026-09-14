@@ -83,6 +83,18 @@ environment variables:
 
 The API key is never returned to the browser.
 
+For every authenticated chat request, Django reads the same asset displayed on
+the dashboard and sends its facts, tenant revenue shares, vacancies, and renewal
+and rent metrics to the model. Amounts are explicitly labelled as AED millions;
+totals are calculated by the application. The assistant identifies the sample
+data, cites dashboard sections, and explains missing information rather than
+inventing it. This covers the current dashboard asset, not other database tables
+or a portfolio-wide query interface. It cannot execute SQL or change records.
+
+The browser includes the last three successful question/answer pairs for
+follow-ups. History stays in the current page and resets on refresh; database
+data is read again for every message. No database migration is needed for chat.
+
 For Astra, use `AZURE_AI_FOUNDRY_ENDPOINT=https://<resource>.openai.azure.com/openai/v1/`
 and set `AZURE_AI_FOUNDRY_DEPLOYMENT` to the deployment name, such as `gpt-6-astra`.
 The v1 base URL and a complete `/openai/v1/chat/completions` URL are both supported.

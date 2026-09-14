@@ -120,9 +120,9 @@
 
 <button class="chat-launcher" data-chat-open aria-label="Open Enginex AI"><span>✦</span></button>
 <aside class="chat-panel" id="assistant" aria-hidden="true">
-  <header><div><span class="chat-symbol">✦</span><div><strong>Enginex AI</strong><small>{% if foundry_configured %}Your portfolio assistant{% else %}Assistant setup pending{% endif %}</small></div></div><button data-chat-close aria-label="Close chat">×</button></header>
+  <header><div><span class="chat-symbol">✦</span><div><strong>Enginex AI</strong><small>{% if foundry_configured %}{% if asset %}Using {{ asset.name }} dashboard data{% else %}No asset data available{% endif %}{% else %}Assistant setup pending{% endif %}</small></div></div><button data-chat-close aria-label="Close chat">×</button></header>
   <div class="chat-messages" data-chat-messages>
-    <div class="message assistant">Ask me about leasing exposure, renewals, or portfolio performance.</div>
+    <div class="message assistant">{% if asset %}I can review {{ asset.name }}'s dashboard data. Ask me what needs attention, or explore renewals, tenant exposure, and vacancies.{% else %}There are no asset records to analyse yet. Once data is added, I can help review it.{% endif %}</div>
   </div>
   <form class="chat-form" data-chat-form>
     <textarea name="message" rows="2" maxlength="4000" placeholder="Ask a portfolio question…" required></textarea>

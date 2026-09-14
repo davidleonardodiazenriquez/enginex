@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from core import foundry
-from core.models import Asset
+from core.portfolio import asset_context, get_dashboard_asset
 
 
 def health(request):
@@ -16,11 +16,7 @@ def health(request):
 
 @login_required
 def dashboard(request):
-    asset = (
-        Asset.objects.select_related("metrics")
-        .prefetch_related("tenant_revenues", "vacancies")
-        .first()
-    )
+    asset = get_dashboard_asset()
     tenant_total = 0
     vacancy_total = 0
     if asset:
@@ -58,8 +54,26 @@ def chat(request):
     if len(message) > 4000:
         return JsonResponse({"error": "Message exceeds 4,000 characters."}, status=400)
 
+    history = body.get("history", [])
+    if not isinstance(history, list) or len(history) > 6 or len(history) % 2:
+        return JsonResponse({"error": "Invalid conversation history."}, status=400)
+    for index, turn in enumerate(history):
+        expected_role = "user" if index % 2 == 0 else "assistant"
+        if (
+            not isinstance(turn, dict)
+            or turn.get("role") != expected_role
+            or not isinstance(turn.get("content"), str)
+            or not 1 <= len(turn["content"].strip()) <= 4000
+        ):
+            return JsonResponse({"error": "Invalid conversation history."}, status=400)
+    # Only role/content are forwarded; clients cannot supply model instructions
+    # or replace the authoritative database snapshot.
+    history = [{"role": turn["role"], "content": turn["content"].strip()} for turn in history]
+
     try:
-        answer = foundry.get_answer(message)
+        answer = foundry.get_answer(
+            message, context=asset_context(get_dashboard_asset()), history=history,
+        )
         return JsonResponse({"answer": answer})
     except foundry.FoundryUnavailable:
         return JsonResponse({"error": "The AI assistant is temporarily unavailable."}, status=502)

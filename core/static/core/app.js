@@ -1,6 +1,7 @@
 const panel = document.querySelector(".chat-panel");
 const messages = document.querySelector("[data-chat-messages]");
 const form = document.querySelector("[data-chat-form]");
+const history = [];
 
 document.querySelectorAll("[data-chat-open]").forEach((button) => {
   button.addEventListener("click", () => {
@@ -29,7 +30,7 @@ form?.addEventListener("submit", async (event) => {
   const textarea = form.querySelector("textarea");
   const button = form.querySelector("button");
   const text = textarea.value.trim();
-  if (!text) return;
+  if (!text || button.disabled) return;
 
   addMessage(text, "user");
   textarea.value = "";
@@ -43,11 +44,19 @@ form?.addEventListener("submit", async (event) => {
         "Content-Type": "application/json",
         "X-CSRFToken": document.querySelector('meta[name="csrf-token"]').content,
       },
-      body: JSON.stringify({ message: text }),
+      body: JSON.stringify({ message: text, history }),
     });
     const payload = await response.json();
     pending.textContent = response.ok ? payload.answer : payload.error;
     pending.classList.remove("pending");
+    if (response.ok) {
+      history.push(
+        { role: "user", content: text },
+        { role: "assistant", content: payload.answer.slice(0, 4000) },
+      );
+      history.splice(0, Math.max(0, history.length - 6));
+    }
+    messages.scrollTop = messages.scrollHeight;
   } catch (_error) {
     pending.textContent = "The assistant could not be reached. Please try again.";
     pending.classList.remove("pending");
