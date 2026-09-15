@@ -1,11 +1,12 @@
 /* Keep intrinsic grid content inside its column, including long contract names. */
 .summary-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }.summary-grid article:nth-child(3) a { color:#d3e5df; }.summary-grid article,.overview-grid>*,.metrics-grid>*,.workspace-heading>*,.ingest-grid>* { min-width:0; }
+.dashboard-summary { grid-template-columns:repeat(3,minmax(0,1fr)); }
 .workspace-heading h1,.document-heading h1,.facts dd { overflow-wrap:anywhere; }.workspace-heading .heading-actions { min-width:0; flex-wrap:wrap; }.facts div { min-width:0; }.table-scroll { max-width:100%; -webkit-overflow-scrolling:touch; }
 .ai-workspace-page .topbar { display:none; }.portfolio-map-page.has-app-navigation { padding-bottom:0; }.portfolio-map-page .atlas-shell { height:calc(100dvh - 80px); }
 .portfolio-map-page .asset-preview { bottom:135px; }.portfolio-map-page .atlas-footer { bottom:24px; padding-right:485px; }.portfolio-map-page .map-hint { display:none; }
 .portfolio-map-page .map-tools { right:24px; }.portfolio-map-page .atlas-header nav { gap:20px; }
 @media(max-width:1250px) { .atlas-header .workspace-label,.atlas-header .workspace-dot { display:none; }.atlas-header { padding-inline:22px; gap:16px; }.atlas-header nav { gap:15px!important; }.atlas-header nav a { font-size:11px; }.portfolio-map-page .atlas-footer { padding-right:0; bottom:20px; width:calc(100% - 550px); }.portfolio-map-page .map-mode { display:none; } }
-@media(max-width:1000px) { .summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:1000px) { .summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.dashboard-summary article:last-child { grid-column:1/-1; } }
 @media(max-width:760px) {
   html { -webkit-text-size-adjust:100%; scroll-padding-top:75px; }
   input:not([type=checkbox]):not([type=radio]),select,textarea,.workspace-shell input:not([type=checkbox]),.workspace-shell select,.workspace-shell textarea,.location-search input { font-size:16px!important; }

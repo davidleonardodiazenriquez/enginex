@@ -32,10 +32,9 @@
     </div>
   </section>
 
-  <section class="summary-grid">
+  <section class="summary-grid dashboard-summary">
     <article><small>Portfolio records</small><strong>{{ summary.synthetic_records }}</strong><span>Unit / lease records · {{ summary.synthetic_fields }} values</span></article>
     <article><small>Occupancy</small><strong>{{ summary.occupancy_pct|default_if_none:'—' }}%</strong><span>As of {{ summary.as_of|date:'d M Y' }}</span></article>
-    <article><small>Contract evidence</small><strong>{{ summary.documents }}</strong><a href="{% url 'portfolio_report' %}?asset={{ asset.pk }}&source=documents">Review document-backed values ↗</a></article>
     <article><small>Net Promoter Score</small><strong>{{ feedback_summary.nps_display }}</strong><a href="{% url 'feedback' %}?location={{ asset.name|urlencode }}">{{ feedback_summary.scored }} responses · Explore resident feedback ↗</a></article>
   </section>
   <p class="workspace-footnote">Explore unit and lease records, then follow contract evidence to its source.</p>
@@ -47,7 +46,7 @@
     <article class="fact-card">
       <div class="card-title">Asset fact sheet</div>
       <dl class="facts">
-        {% for fact in asset_facts %}<div><dt>{{ fact.label }}</dt><dd>{{ fact.value|portfolio_text }} <small class="source-badge synthetic">{{ fact.source|portfolio_text }}</small></dd></div>{% endfor %}
+        {% for fact in asset_facts %}<div><dt>{{ fact.label }}</dt><dd>{{ fact.value|portfolio_text }}</dd></div>{% endfor %}
       </dl>
     </article>
   </section>
