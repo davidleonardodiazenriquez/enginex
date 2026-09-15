@@ -102,7 +102,7 @@ class FoundryTransportTests(SimpleTestCase):
                 self.assertEqual(urlopen.call_args.args[0].full_url, expected_url)
 
     @patch("core.foundry.request.urlopen")
-    def test_v1_payload_supports_astra_and_custom_deployment_names(self, urlopen):
+    def test_v1_payload_supports_reasoning_and_custom_deployment_names(self, urlopen):
         urlopen.return_value.__enter__.return_value.read.return_value = (
             b'{"choices":[{"message":{"content":"OK"}}]}'
         )

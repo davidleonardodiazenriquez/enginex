@@ -49,7 +49,7 @@ class ContractFlowTests(TestCase):
         run=queue_extraction(doc,self.user)
         self.assertEqual(claim_run().pk,run.pk)
         result={'fields':[{'name':'annual_rent','value':'AED 120,000','page':1,'quote':'Annual rent: AED 120,000.'},{'name':'property_location','value':'Al Rayyana','page':1,'quote':'Location: Al Rayyana.'}], 'warnings':[]}
-        with patch('core.contracts.extract_with_astra',return_value=result):
+        with patch('core.contracts.extract_contract_fields',return_value=result):
             process_run(run)
         run.refresh_from_db()
         return run
@@ -108,7 +108,7 @@ class ContractFlowTests(TestCase):
         queued=queue_extraction(doc,self.user)
         self.assertEqual(queue_extraction(doc,self.user).pk,queued.pk)
         self.assertEqual(claim_run().pk,queued.pk);self.assertIsNone(claim_run())
-        with patch('core.contracts.extract_with_astra',side_effect=contract_storage.DocumentError('Astra unavailable')):process_run(queued)
+        with patch('core.contracts.extract_contract_fields',side_effect=contract_storage.DocumentError('EnginexAI unavailable')):process_run(queued)
         queued.refresh_from_db();self.assertEqual(queued.status,'failed');self.assertFalse(queued.fields.exists())
         self.assertEqual(record_rows([doc.record])[0]['evidence_count'],successful.fields.count())
 

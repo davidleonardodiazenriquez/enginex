@@ -94,7 +94,7 @@ def contract_extract(request, pk):
     document = get_object_or_404(ContractDocument,pk=pk)
     try:
         queue_extraction(document,request.user)
-        messages.success(request,"Extraction queued. The worker will read this PDF and send its numbered text pages to Astra.")
+        messages.success(request,"Extraction queued. EnginexAI will read this PDF and extract values with supporting page references.")
     except contract_storage.DocumentError as exc:
         messages.error(request,str(exc))
     return redirect("contract_detail",pk=pk)

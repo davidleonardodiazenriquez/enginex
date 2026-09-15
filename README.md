@@ -77,7 +77,7 @@ After login, `/` opens the interactive Abu Dhabi portfolio map. All six location
 open their own asset dashboard after the additive demo population command runs.
 `/reports/` combines synthetic records and document-backed evidence with per-value
 provenance. `/contracts/` supports local PDF upload, Azure Storage selection,
-Astra extraction, manual association, review and source-page navigation.
+EnginexAI extraction, manual association, review and source-page navigation.
 
 See [the demo walkthrough](docs/demo-walkthrough.md) for the story, operating
 steps, provenance rules and known limits. The original Al Rayyana summary is
@@ -146,8 +146,8 @@ The browser includes the last three successful question/answer pairs for
 follow-ups. History stays in the current page and resets on refresh; database
 data is read again for every message. The document-backed demo adds an additive schema migration.
 
-For Astra, use `AZURE_AI_FOUNDRY_ENDPOINT=https://<resource>.openai.azure.com/openai/v1/`
-and set `AZURE_AI_FOUNDRY_DEPLOYMENT` to the deployment name, such as `gpt-6-astra`.
+For EnginexAI, use `AZURE_AI_FOUNDRY_ENDPOINT=https://<resource>.openai.azure.com/openai/v1/`
+and set `AZURE_AI_FOUNDRY_DEPLOYMENT` to the deployment name, for example `your-deployment-name`.
 The v1 base URL and a complete `/openai/v1/chat/completions` URL are both supported.
 The dated API version setting is ignored for v1 endpoints. Requests use
 `max_completion_tokens` with a 4,096-token budget for reasoning and output, and
@@ -161,7 +161,7 @@ not a live connectivity check.
 
 ## EnginexAI
 
-`/enginex-ai/` provides portfolio-wide Astra analysis, read-only database queries,
+`/enginex-ai/` provides portfolio-wide EnginexAI analysis, read-only database queries,
 PDF evidence links and calculated bar, line and doughnut charts. A persistent
 bottom composer is available on all authenticated app pages. The layout adapts
 to mobile Safari with bottom navigation and keyboard-aware input positioning.

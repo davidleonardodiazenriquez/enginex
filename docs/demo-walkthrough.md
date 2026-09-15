@@ -39,7 +39,7 @@ report links remain available if WebGL is unavailable.
    and record report. Point out the synthetic labels and reporting date.
 2. Open **Contract workspace**. Upload up to ten approved anonymized PDFs, or
    choose **Browse storage** and select PDFs from `storagex`. Confirm the files
-   are approved for the demo and leave **Extract with Astra** selected.
+   are approved for the demo and leave **Extract with EnginexAI** selected.
 3. Open a document. Extraction is asynchronous and continues when the page is
    closed. The status panel offers a link to the results when ready.
 4. Review an extracted value against its quotation and rendered source page.
@@ -73,7 +73,7 @@ Useful demo prompts:
 - “Show upcoming lease expiries by month as a line chart.”
 - “What do the ten anonymized contracts say about escalation? Cite PDF pages.”
 
-Each question refreshes the database overview. Astra can call read-only tools for
+Each question refreshes the database overview. EnginexAI can call read-only tools for
 all 33 lease baseline fields, every location, asset facts, legacy metrics and
 rankings, extracted fields, stored PDF page text, extraction status and recent
 association history. Unassigned contracts are included. A location dashboard
@@ -93,7 +93,7 @@ a turn has a bounded number of queries and a time limit.
 
 The global UI uses `/api/enginex-ai/`. The older `/api/chat/` and asset chat routes
 remain compatible with their previous, selected-asset summary API. The configured
-Astra Chat Completions deployment requires `reasoning_effort=none` for function
+reasoning-model Chat Completions deployment requires `reasoning_effort=none` for function
 calls; tool-free finalization can use its default. No new cloud credentials,
 database tables or environment variables are required.
 
@@ -129,7 +129,7 @@ of replacing earlier evidence.
 - The app stores documents, records, extraction runs, page text, extracted fields,
   review decisions and association history in PostgreSQL.
 - PDF text is extracted per page with pypdf, then the numbered text is sent to the
-  configured Astra deployment. This is an actual model call, not a canned result.
+  configured EnginexAI deployment. This is an actual model call, not a canned result.
 - A returned value must occur within its quotation, and the quotation must match
   the specified page after whitespace normalization. Invalid evidence is excluded.
   These checks establish traceability, not semantic correctness; human review is

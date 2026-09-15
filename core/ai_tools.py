@@ -1,4 +1,4 @@
-"""Astra function descriptions for the application's read-only business data."""
+"""EnginexAI function descriptions for the application's read-only business data."""
 
 from core.record_fields import FIELDS
 from core.ai_data import NUMERIC_FIELDS

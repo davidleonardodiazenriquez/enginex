@@ -46,7 +46,7 @@ def queue_extraction(document, user=None):
     if active:
         return active
     if not foundry.is_configured():
-        raise contract_storage.DocumentError("Configure Astra before starting extraction. Your PDF has been retained.")
+        raise contract_storage.DocumentError("Configure EnginexAI before starting extraction. Your PDF has been retained.")
     return ExtractionRun.objects.create(document=document, requested_by=user)
 
 
@@ -81,7 +81,7 @@ def validate_fields(result, pages):
     return accepted, warnings
 
 
-def extract_with_astra(pages):
+def extract_contract_fields(pages):
     url, _ = foundry._chat_endpoint()
     payload = {
         "model": settings.AZURE_AI_FOUNDRY_DEPLOYMENT,
@@ -119,7 +119,7 @@ def extract_with_astra(pages):
         return json.loads(text)
     except (error.URLError, OSError, ValueError, KeyError, IndexError, TypeError) as exc:
         logger.warning("Contract extraction provider error: type=%s", type(exc).__name__)
-        raise contract_storage.DocumentError("Astra could not complete extraction. Retry; the source PDF and prior results are retained.") from None
+        raise contract_storage.DocumentError("EnginexAI could not complete extraction. Retry; the source PDF and prior results are retained.") from None
 
 
 def process_run(run):
@@ -135,7 +135,7 @@ def process_run(run):
         run.pages = pages
         run.model = settings.AZURE_AI_FOUNDRY_DEPLOYMENT
         run.save(update_fields=["pages", "model"])
-        result = extract_with_astra(pages)
+        result = extract_contract_fields(pages)
         fields, warnings = validate_fields(result, pages)
         if any(len(page["text"].strip()) < 100 for page in pages):
             warnings.append("Some pages contain little text (for example plans or scans). Image-only content was not interpreted; inspect those pages in the PDF.")

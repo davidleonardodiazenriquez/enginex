@@ -21,7 +21,7 @@ class Command(BaseCommand):
             finally:
                 close_old_connections()
 
-        # One coordinator claims jobs transactionally; two bounded workers call Astra.
+        # One coordinator claims jobs transactionally; two bounded workers call EnginexAI.
         with ThreadPoolExecutor(max_workers=2) as pool:
             pending = set()
             while True:

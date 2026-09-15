@@ -34,9 +34,9 @@ def chat(request):
     except (ValueError, UnicodeDecodeError):
         return JsonResponse({"error": "Send a question up to 4,000 characters and a valid conversation history."}, status=400)
     if not foundry.is_configured():
-        return JsonResponse({"error": "Astra is not configured. Your portfolio remains available in the reports."}, status=503)
+        return JsonResponse({"error": "EnginexAI is not configured. Your portfolio remains available in the reports."}, status=503)
     try:
         result = analyst.answer(body["message"].strip(), [{"role": t["role"], "content": t["content"]} for t in history], location)
     except foundry.FoundryUnavailable:
-        return JsonResponse({"error": "Astra could not complete this analysis. Try a narrower question or retry. No records were changed."}, status=502)
+        return JsonResponse({"error": "EnginexAI could not complete this analysis. Try a narrower question or retry. No records were changed."}, status=502)
     return JsonResponse(result)

@@ -111,7 +111,7 @@ class PortfolioAnalystTests(TestCase):
 
     @override_settings(AZURE_AI_FOUNDRY_DEPLOYMENT="gpt-6-astra")
     @patch("core.analyst.request.urlopen")
-    def test_astra_function_calls_use_supported_transport_mode(self, urlopen):
+    def test_reasoning_model_function_calls_use_supported_transport_mode(self, urlopen):
         urlopen.return_value.__enter__.return_value.read.return_value = json.dumps({
             "choices": [{"finish_reason": "stop", "message": {"content": "Ready"}}]
         })

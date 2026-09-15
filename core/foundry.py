@@ -110,7 +110,7 @@ def get_answer(message: str, *, context=None, history=None) -> str:
     if deployment and "/deployments/" not in parse.urlsplit(url).path:
         payload["model"] = deployment
     if is_v1 or deployment.startswith(("gpt-5", "gpt-6", "o1", "o3", "o4")):
-        # Reasoning and the visible answer share this budget. Astra rejects
+        # Reasoning and the visible answer share this budget. The reasoning model rejects
         # max_tokens and custom temperature values.
         payload["max_completion_tokens"] = 4096
     else:
