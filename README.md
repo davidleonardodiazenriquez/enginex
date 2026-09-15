@@ -129,8 +129,8 @@ The target is `sastestathonun001/storagex`. Local development without Azure uses
 ignored `private-media/` storage. Production requires configured Azure storage.
 
 Leaflet 1.9.4 and its BSD license are bundled under `core/static/core/vendor`.
-Satellite tiles load directly from Esri World Imagery and street tiles from
-OpenStreetMap, with attribution on the map. These require browser internet access.
+The map uses satellite imagery only, loaded directly from Esri World Imagery
+with attribution on the map. These tiles require browser internet access.
 If tiles fail, the location list and report links remain usable.
 
 Design reference: [World of Aldar](https://world.aldar.com/uae).

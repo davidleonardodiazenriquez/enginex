@@ -98,7 +98,7 @@
   if (!window.L) {
     message.textContent = "The map could not load. You can still explore locations from the list and open Al Rayyana metrics.";
     message.hidden = false;
-    document.querySelectorAll(".map-tools button, [data-map-style]").forEach((button) => { button.disabled = true; });
+    document.querySelectorAll(".map-tools button").forEach((button) => { button.disabled = true; });
     return;
   }
 
@@ -112,21 +112,14 @@
     maxZoom: 18,
     attribution: 'Imagery © Esri, Vantor, Earthstar Geographics, GIS User Community',
   });
-  const street = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 18,
-    attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
-  });
-  let activeLayer = satellite;
-  [satellite, street].forEach((layer) => {
-    let successes = 0;
-    layer.on("loading", () => { successes = 0; });
-    layer.on("tileload", () => { successes += 1; if (layer === activeLayer) message.hidden = true; });
-    layer.on("load", () => {
-      if (layer === activeLayer && !successes) {
-        message.textContent = "Map imagery is unavailable. Try the other map style, or select a location from the list.";
-        message.hidden = false;
-      }
-    });
+  let loadedTiles = 0;
+  satellite.on("loading", () => { loadedTiles = 0; });
+  satellite.on("tileload", () => { loadedTiles += 1; message.hidden = true; });
+  satellite.on("load", () => {
+    if (!loadedTiles) {
+      message.textContent = "Map imagery is unavailable. You can still select a location from the list.";
+      message.hidden = false;
+    }
   });
   satellite.addTo(map);
   markers = L.layerGroup().addTo(map);
@@ -195,19 +188,6 @@
     closeList();
     overview();
   });
-  document.querySelectorAll("[data-map-style]").forEach((button) => button.addEventListener("click", () => {
-    const nextLayer = button.dataset.mapStyle === "satellite" ? satellite : street;
-    if (activeLayer !== nextLayer) {
-      map.removeLayer(activeLayer);
-      activeLayer = nextLayer;
-      activeLayer.addTo(map);
-    }
-    document.getElementById("portfolio-map").classList.toggle("street", activeLayer === street);
-    document.querySelectorAll("[data-map-style]").forEach((item) => {
-      item.classList.toggle("active", item === button);
-      item.setAttribute("aria-pressed", String(item === button));
-    });
-  }));
   let resizeTimer;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
