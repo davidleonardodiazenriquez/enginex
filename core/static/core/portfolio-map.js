@@ -14,6 +14,7 @@
   let markers;
   let visibleLocations = locations;
   let initialOverview = true;
+  let mobileView = { kind: "overview" };
 
   function closeList() {
     explorer.classList.remove("list-open");
@@ -55,10 +56,12 @@
     closeList();
     if (map) {
       if (focus) {
-        const zoom = 16;
-        const point = map.project(location.coordinates, zoom);
-        if (mobile()) point.y += 65;
-        map.flyTo(map.unproject(point, zoom), zoom, { animate: !reduceMotion, duration: 1.35 });
+        if (mobile()) {
+          mobileView = { kind: "location", location };
+          frameMobileView();
+        } else {
+          map.flyTo(location.coordinates, 16, { animate: !reduceMotion, duration: 1.35 });
+        }
       }
       renderMarkers();
     }
@@ -103,7 +106,7 @@
   }
 
   map = L.map("portfolio-map", {
-    zoomControl: false, attributionControl: true, minZoom: 10, maxZoom: 18,
+    zoomControl: false, attributionControl: true, minZoom: mobile() ? 9 : 10, maxZoom: 18,
     zoomSnap: 0.5, scrollWheelZoom: true, maxBounds: [[24.20, 54.15], [24.72, 54.85]],
     maxBoundsViscosity: 0.8,
   });
@@ -124,13 +127,50 @@
   satellite.addTo(map);
   markers = L.layerGroup().addTo(map);
 
+  function mobilePadding() {
+    const frame = map.getContainer().getBoundingClientRect();
+    const intro = document.querySelector(".explorer-intro").getBoundingClientRect();
+    const preview = document.querySelector(".asset-preview").getBoundingClientRect();
+    // Fit the geography into the visible gap, reserving space for marker labels.
+    return {
+      paddingTopLeft: L.point(28, Math.ceil(intro.bottom - frame.top + 28)),
+      paddingBottomRight: L.point(Math.min(132, frame.width * .3), Math.ceil(frame.bottom - preview.top + 38)),
+    };
+  }
+
+  function frameMobileView(animate = !reduceMotion) {
+    if (mobileView.kind === "manual") return;
+    const padding = mobilePadding();
+    const options = { ...padding, animate, duration: 1.1 };
+    if (mobileView.kind === "location") {
+      const zoom = 14.5;
+      const size = map.getSize();
+      const visibleCenter = padding.paddingTopLeft.add(size.subtract(padding.paddingBottomRight)).divideBy(2);
+      const center = map.project(mobileView.location.coordinates, zoom).add(size.divideBy(2).subtract(visibleCenter));
+      map.flyTo(map.unproject(center, zoom), zoom, options);
+    } else {
+      const group = mobileView.kind === "reem" ? locations.filter(location => location.area === "Al Reem Island") : locations;
+      const bounds = L.latLngBounds(group.map(location => location.coordinates));
+      const fit = { ...options, maxZoom: mobileView.kind === "reem" ? 14.5 : 12 };
+      if (animate) map.flyToBounds(bounds, fit);
+      else map.fitBounds(bounds, fit);
+    }
+    renderMarkers();
+  }
+
   function overview() {
-    const left = mobile() ? 35 : explorer.offsetWidth + explorer.offsetLeft + 60;
-    const right = mobile() ? 170 : document.querySelector(".asset-preview").offsetWidth + 180;
+    if (mobile()) {
+      mobileView = { kind: "overview" };
+      frameMobileView(initialOverview ? false : !reduceMotion);
+      initialOverview = false;
+      return;
+    }
+    const left = explorer.offsetWidth + explorer.offsetLeft + 60;
+    const right = document.querySelector(".asset-preview").offsetWidth + 180;
     const bounds = L.latLngBounds(locations.map((location) => location.coordinates));
     const options = {
-      paddingTopLeft: [left, mobile() ? 205 : 125],
-      paddingBottomRight: [right, mobile() ? 335 : 130],
+      paddingTopLeft: [left, 125],
+      paddingBottomRight: [right, 130],
       maxZoom: 13, animate: !reduceMotion, duration: 1.25,
     };
     if (initialOverview) {
@@ -154,15 +194,19 @@
   function renderMarkers() {
     markers.clearLayers();
     const reem = visibleLocations.filter((location) => location.area === "Al Reem Island");
-    const clustered = map.getZoom() < 14.5 && reem.length > 1;
+    const reemDetail = mobile() && (mobileView.kind === "reem" || mobileView.kind === "location" && mobileView.location.area === "Al Reem Island");
+    const clustered = map.getZoom() < 14.5 && reem.length > 1 && !reemDetail;
     if (clustered) {
       const cluster = L.marker([24.501, 54.4085], {
-        icon: L.divIcon({ className: "cluster-marker", iconSize: [204, 58], iconAnchor: [28, 29],
+        icon: L.divIcon({ className: "cluster-marker", iconSize: mobile() ? [170, 44] : [204, 58], iconAnchor: mobile() ? [22, 22] : [28, 29],
           html: `<span class="cluster-body"><span class="cluster-count">${reem.length}</span><span class="cluster-copy"><strong>Al Reem Island</strong><small>Gate · Arc · The Bridges II</small></span><span class="cluster-arrow">↗</span></span>` }),
       });
       accessibleMarker(cluster, `Explore ${reem.length} Al Reem Island locations`, () => {
         closeList();
-        map.flyTo([24.5017, 54.408], 15, { animate: !reduceMotion, duration: 1.25 });
+        if (mobile()) {
+          mobileView = { kind: "reem" };
+          frameMobileView();
+        } else map.flyTo([24.5017, 54.408], 15, { animate: !reduceMotion, duration: 1.25 });
       });
     }
     visibleLocations.filter((location) => !clustered || location.area !== "Al Reem Island").forEach((location) => {
@@ -179,8 +223,9 @@
 
   map.on("zoomend", renderMarkers);
   map.on("click", closeList);
-  document.getElementById("zoom-in").addEventListener("click", () => map.zoomIn());
-  document.getElementById("zoom-out").addEventListener("click", () => map.zoomOut());
+  map.on("dragstart", () => { mobileView = { kind: "manual" }; });
+  document.getElementById("zoom-in").addEventListener("click", () => { mobileView = { kind: "manual" }; map.zoomIn(); });
+  document.getElementById("zoom-out").addEventListener("click", () => { mobileView = { kind: "manual" }; map.zoomOut(); });
   document.getElementById("reset-map").addEventListener("click", () => {
     search.value = "";
     filter = "all";
@@ -189,10 +234,17 @@
     overview();
   });
   let resizeTimer;
-  window.addEventListener("resize", () => {
+  function resizeMap() {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { map.invalidateSize(); overview(); }, 150);
-  });
+    resizeTimer = setTimeout(() => {
+      map.invalidateSize({ pan: false });
+      if (mobile()) frameMobileView(false);
+      else overview();
+    }, 150);
+  }
+  window.addEventListener("resize", resizeMap);
+  const layoutObserver = new ResizeObserver(() => { if (mobile()) resizeMap(); });
+  [map.getContainer(), document.querySelector(".asset-preview"), document.querySelector(".explorer-intro")].forEach(element => layoutObserver.observe(element));
   overview();
   renderMarkers();
 })();
