@@ -82,3 +82,34 @@ class LocalDemoLoginTests(TestCase):
     @override_settings(DEBUG=False)
     def test_auto_login_is_not_enabled_outside_development(self):
         self.assertRedirects(self.client.get("/"), "/login/?next=/")
+
+
+@override_settings(DEBUG=False, LOCAL_DEMO_AUTO_LOGIN=False, DEMO_AUTO_LOGIN=True)
+class HostedDemoLoginTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.demo = get_user_model().objects.create_user(username="demo")
+
+    def test_fresh_hosted_visitors_open_workspace_without_credentials(self):
+        for path in ("/", "/process/", "/feedback/", "/enginex-ai/", "/reports/"):
+            with self.subTest(path=path):
+                client = Client()
+                response = client.get(path)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.wsgi_request.user.pk, self.demo.pk)
+                self.assertFalse(response.wsgi_request.user.is_staff)
+                self.assertEqual(client.session[SESSION_KEY], str(self.demo.pk))
+                self.assertNotContains(response, "Sign out")
+        self.assertRedirects(Client().get("/login/?next=/process/"), "/process/")
+
+    def test_administrator_still_requires_its_own_login(self):
+        self.assertRedirects(self.client.get("/admin/"), "/admin/login/?next=/admin/")
+        self.assertNotIn(SESSION_KEY, self.client.session)
+        self.client.get("/")
+        self.assertRedirects(self.client.get("/admin/"), "/admin/login/?next=/admin/")
+
+    def test_privileged_demo_account_is_never_used_for_public_access(self):
+        self.demo.is_staff = True
+        self.demo.save(update_fields=["is_staff"])
+        self.assertEqual(self.client.get("/").status_code, 503)
+        self.assertNotIn(SESSION_KEY, self.client.session)

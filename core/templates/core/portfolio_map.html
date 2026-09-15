@@ -10,7 +10,7 @@
 <header class="atlas-header">
   <a class="brand brand-light" href="{% url 'portfolio' %}"><span class="brand-mark">E</span><span>ENGINEX<small>ASSET INTELLIGENCE</small></span></a>
   <nav aria-label="Primary navigation"><a class="active" href="{% url 'portfolio' %}"><span class="nav-map-icon">⌖</span> Portfolio map</a><a href="{% url 'portfolio_report' %}">Portfolio report <span>↗</span></a><a href="{% url 'contracts' %}">Contracts <span>↗</span></a></nav>
-  <div class="atlas-account"><span class="workspace-dot"></span><span class="workspace-label">YOUR WORKSPACE</span><span class="account-avatar">{{ request.user.username|first|upper }}</span>{% if not request.local_demo_access %}<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form>{% endif %}</div>
+  <div class="atlas-account"><span class="workspace-dot"></span><span class="workspace-label">YOUR WORKSPACE</span><span class="account-avatar">{{ request.user.username|first|upper }}</span>{% if not request.demo_access %}<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form>{% endif %}</div>
 </header>
 
 <main class="atlas-shell">

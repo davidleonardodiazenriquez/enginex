@@ -4,6 +4,7 @@ from .settings import *  # noqa: F403
 
 DEBUG = True
 LOCAL_DEMO_AUTO_LOGIN = False
+DEMO_AUTO_LOGIN = False
 SECRET_KEY = "isolated-test-signing-key"
 DATABASES = {
     "default": {

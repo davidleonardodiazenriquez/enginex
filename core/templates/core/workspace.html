@@ -5,7 +5,7 @@
 <header class="topbar workspace-topbar">
   <a class="brand brand-light" href="{% url 'portfolio' %}"><span class="brand-mark">E</span><span>ENGINEX</span></a>
   <nav class="topnav" aria-label="Primary navigation"><a href="{% url 'portfolio' %}">Portfolio map</a><a href="{% url 'portfolio_report' %}">Portfolio report</a><a href="{% url 'contracts' %}">Contract workspace</a></nav>
-  <div class="account-menu"><span>{{ request.user.username|portfolio_text }}</span>{% if not request.local_demo_access %}<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button>Sign out</button></form>{% endif %}</div>
+  <div class="account-menu"><span>{{ request.user.username|portfolio_text }}</span>{% if not request.demo_access %}<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button>Sign out</button></form>{% endif %}</div>
 </header>
 <main class="workspace-shell">
 {% for message in messages %}<div class="notice {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}

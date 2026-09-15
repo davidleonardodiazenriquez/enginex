@@ -14,6 +14,11 @@ make worker  # In a second terminal, process locally queued contract extractions
 
 The app opens directly as `demo` with no login form. Local `.env` enables
 `DJANGO_LOCAL_DEMO_AUTO_LOGIN=true`; this applies only in development mode.
+The hosted presentation app uses explicit `DJANGO_DEMO_AUTO_LOGIN=true` to
+provide the same direct workspace access with production settings. Visitors
+receive a regular `demo` session; `/admin/` still requires administrator login.
+Set the hosted flag to `false` to restore workspace sign-in. No password changes
+are needed for this mode, and the demo account must not have staff privileges.
 Direct report, PDF and chat links also create a demo session. Document actions
 remain attributed to that account. Sign out controls are hidden in this mode.
 The local demo password was updated as requested; it is stored as a database

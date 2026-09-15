@@ -14,7 +14,7 @@
   <div class="account-menu">
     <span class="account-avatar">{{ request.user.username|first|upper }}</span>
     <span>{{ request.user.username|portfolio_text }}</span>
-    {% if not request.local_demo_access %}<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form>{% endif %}
+    {% if not request.demo_access %}<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form>{% endif %}
   </div>
 </header>
 
