@@ -2,7 +2,9 @@
   <a class="rail-brand" href="{% url 'portfolio' %}" aria-label="Enginex portfolio">E</a>
   <a href="{% url 'portfolio' %}" {% if request.resolver_match.url_name == 'portfolio' or request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'asset_dashboard' %}aria-current="page"{% endif %}><span aria-hidden="true">⌖</span><small>Portfolio</small></a>
   <a href="{% url 'portfolio_report' %}" {% if request.resolver_match.url_name == 'portfolio_report' %}aria-current="page"{% endif %}><span aria-hidden="true">▥</span><small>Reports</small></a>
+  <a href="{% url 'feedback' %}" {% if request.resolver_match.url_name == 'feedback' or request.resolver_match.url_name == 'feedback_detail' %}aria-current="page"{% endif %}><span aria-hidden="true">♡</span><small>Feedback</small></a>
   <a class="rail-ai" href="{% url 'enginex_ai' %}" {% if request.resolver_match.url_name == 'enginex_ai' %}aria-current="page"{% endif %}><span aria-hidden="true">✦</span><small>EnginexAI</small></a>
   <a href="{% url 'contracts' %}" {% if request.resolver_match.url_name == 'contracts' or request.resolver_match.url_name == 'contract_detail' %}aria-current="page"{% endif %}><span aria-hidden="true">▤</span><small>Contracts</small></a>
-  <span class="rail-caption">ALDAR · DEMO</span>
+  <a href="{% url 'process' %}" {% if request.resolver_match.url_name == 'process' %}aria-current="page"{% endif %}><span aria-hidden="true">⇢</span><small>Process</small></a>
+  <span class="rail-caption">ALDAR · PORTFOLIO</span>
 </nav>

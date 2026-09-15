@@ -1,0 +1,49 @@
+{% extends "core/workspace.html" %}{% load static %}
+{% block title %}Process · Enginex{% endblock %}
+{% block extra_head %}{{ block.super }}<link rel="stylesheet" href="{% static 'core/process.css' %}">{% endblock %}
+{% block body_class %}workspace-page process-page{% endblock %}
+{% block workspace %}
+<div class="workspace-heading process-heading">
+  <div><p class="eyebrow">THE ENGINEX PROCESS</p><h1>From documents.<br><em>To decisions.</em></h1><p>Follow the information. See how every step connects.</p></div>
+  <a class="process-workspace-link" href="{% url 'contracts' %}">Explore your contracts <span aria-hidden="true">↗</span></a>
+</div>
+
+<section class="process-player" data-process-player aria-label="Animated document workflow">
+  <header class="process-player-header">
+    <div class="process-player-brand"><span aria-hidden="true">✦</span><strong>EnginexAI</strong><span class="process-player-caption">IN MOTION</span></div>
+    <button type="button" class="process-expand" data-process-expand hidden aria-pressed="false"><span aria-hidden="true">⤢</span><span data-expand-label>Expand</span></button>
+  </header>
+  <div class="process-intro">
+    <div class="process-stage-copy" aria-live="polite" aria-atomic="true">
+      <p data-process-counter>01 / 05 · DOCUMENT</p>
+      <h2 data-process-title>Every insight starts with a document.</h2>
+      <p data-process-description>Bring your contracts into one connected workspace.</p>
+    </div>
+    <a class="process-access" href="https://ca-test-athon-test-un-001.thankfulcliff-027a350e.uaenorth.azurecontainerapps.io/" target="_blank" rel="noopener" aria-label="Open the Enginex website in a new tab">
+      <img src="{% static 'core/enginex-access-qr.png' %}" width="540" height="526" alt="QR code to open the Enginex website">
+      <span>Scan to explore<small>Open Enginex on your phone ↗</small></span>
+    </a>
+  </div>
+  <div class="process-stage" data-process-stage>
+    <canvas data-process-canvas role="img" aria-label="A lease document becomes highlighted fields, structured values, a processing pipeline, and charts." aria-describedby="process-text-alternative"></canvas>
+    <p id="process-text-alternative" class="sr-only">A lease document enters the workspace. A scan highlights the tenant, annual rent, lease end and property. These fields move into structured values with a PDF page reference. The information passes through source linking, human review and analysis, then appears as bar, line and occupancy charts.</p>
+  </div>
+  <div class="process-controls" data-process-controls hidden>
+    <button type="button" class="process-play" data-process-play aria-label="Play animation"><span data-process-play-icon aria-hidden="true">▶</span><span data-process-play-label>Play</span></button>
+    <button type="button" class="process-replay" data-process-replay aria-label="Replay animation"><span aria-hidden="true">↺</span><span>Replay</span></button>
+    <label class="process-seek"><span class="sr-only">Animation position</span><input type="range" data-process-seek min="0" max="20" step="0.1" value="0" aria-valuetext="0 of 20 seconds"></label>
+    <span class="process-time" data-process-time aria-hidden="true">0:00 / 0:20</span>
+  </div>
+  <nav class="process-steps" aria-label="Animation stages" data-process-steps hidden>
+    <button type="button" data-process-step="0" aria-current="step"><span>01</span><strong>Document</strong></button>
+    <button type="button" data-process-step="1"><span>02</span><strong>Detect</strong></button>
+    <button type="button" data-process-step="2"><span>03</span><strong>Extract</strong></button>
+    <button type="button" data-process-step="3"><span>04</span><strong>Process</strong></button>
+    <button type="button" data-process-step="4"><span>05</span><strong>Charts</strong></button>
+  </nav>
+  <noscript><div class="process-noscript"><p>Document → Field detection → Extraction → Source review → Charts</p><p>Enable JavaScript to play the animation.</p></div></noscript>
+</section>
+
+<div class="process-next"><p>See the process in your portfolio.</p><div><a href="{% url 'contracts' %}">Contract workspace <span aria-hidden="true">↗</span></a><a href="{% url 'enginex_ai' %}">Explore EnginexAI <span aria-hidden="true">↗</span></a></div></div>
+{% endblock %}
+{% block scripts %}{{ block.super }}<script src="{% static 'core/process.js' %}" defer></script>{% endblock %}

@@ -7,8 +7,9 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from core.locations import LOCATIONS
 from core.models import Asset, LeaseRecord, PortfolioMetrics, TenantRevenue, Vacancy
+from core.portfolio.locations import LOCATIONS
+from core.portfolio.tenant_names import generated_tenant_name
 
 AS_OF = date(2026, 9, 14)
 
@@ -36,6 +37,7 @@ class Command(BaseCommand):
             }
             asset, _ = Asset.objects.get_or_create(name=location["name"], defaults=defaults)
             for number in range(1, count + 1):
+                code = f"DEMO-{index:02d}-{number:05d}"
                 rng = random.Random(index * 10000 + number)
                 occupied = number % 11 != 0
                 bedrooms = rng.choice([1,2,2,3]) if index != 5 else rng.choice([3,4,5])
@@ -44,7 +46,7 @@ class Command(BaseCommand):
                 end = start + timedelta(days=365 if (AS_OF-start).days < 355 else 730)
                 renewal = "Signed" if number % 4 else "In discussion"
                 data = {
-                    "tenant_name": f"Demo tenant {index:02d}-{number:04d}" if occupied else "Vacant",
+                    "tenant_name": generated_tenant_name(code) if occupied else "Vacant",
                     "landlord": "Demo property owner", "unit_reference": f"DEMO-{index:02d}-B{(number-1)//20+1:02d}-U{number:03d}",
                     "property_location": location["name"], "lease_reference": f"SYN-{index:02d}-{number:05d}" if occupied else "Not applicable",
                     "unit_type": "Villa" if index == 5 else "Apartment", "bedrooms": bedrooms,
@@ -62,7 +64,7 @@ class Command(BaseCommand):
                     "maintenance_status": "Work order open" if number % 17 == 0 else "Clear",
                     "risk_band": "High" if number % 13 == 0 else ("Medium" if number % 4 == 0 else "Low"),
                 }
-                _, created = LeaseRecord.objects.get_or_create(code=f"DEMO-{index:02d}-{number:05d}", defaults={"asset":asset,"origin":"synthetic","data":data,"as_of":AS_OF})
+                _, created = LeaseRecord.objects.get_or_create(code=code, defaults={"asset":asset,"origin":"synthetic","data":data,"as_of":AS_OF})
                 created_count += created
             rows = list(asset.lease_records.filter(origin="synthetic"))
             occupied_rows = [r for r in rows if r.data.get("occupancy_status") == "Occupied"]

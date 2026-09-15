@@ -1,4 +1,5 @@
-{% if field.baseline != None %}<div class="field-value baseline"><strong>{{ field.baseline }}</strong><span class="source-badge synthetic">{{ field.baseline_source }}</span></div>{% endif %}
+{% load portfolio_display %}
+{% if field.baseline != None %}<div class="field-value baseline"><strong>{{ field.display_baseline }}</strong><span class="source-badge synthetic">{{ field.baseline_source|portfolio_text }}</span></div>{% endif %}
 {% for item in field.evidence %}<div class="field-value evidence"><strong>{{ item.value }}</strong><span class="source-badge document">{{ item.review }}</span><a class="source-link" href="{{ item.source_url }}" target="_blank" rel="noopener">PDF · p. {{ item.page }} ↗</a><small>{{ item.document_title }}</small></div>{% endfor %}
 {% if field.conflict %}<small class="conflict-note">Multiple document values — review the sources.</small>{% endif %}
 {% if field.baseline == None and not field.evidence %}<span class="muted">Not stated</span>{% endif %}

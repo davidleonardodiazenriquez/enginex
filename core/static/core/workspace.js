@@ -26,7 +26,7 @@ if (progress) {
         link.href = window.location.pathname;
         link.className = 'text-link';
         link.textContent = result.status === 'completed' ? ' View extracted fields →' : ' View extraction result →';
-        progress.replaceChildren(document.createTextNode(result.label + '. '), link);
+        progress.replaceChildren(document.createTextNode(result.label + '. ' + (result.association_label || '') + '. '), link);
       }
     } catch (_) { /* The visible PDF and forms remain usable while disconnected. */ }
   }, 4000);

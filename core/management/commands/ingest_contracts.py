@@ -2,8 +2,8 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
 
-from core import contract_storage
-from core.contracts import ingest_pdf, queue_extraction
+from core.documents import storage as contract_storage
+from core.documents.services import ingest_pdf, queue_extraction
 
 
 class Command(BaseCommand):

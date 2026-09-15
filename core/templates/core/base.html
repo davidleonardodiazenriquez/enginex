@@ -15,7 +15,7 @@
   {% if request.user.is_authenticated %}{% include 'core/app_navigation.html' %}{% endif %}
   {% block content %}{% endblock %}
   {% if request.user.is_authenticated %}
-    {% if request.resolver_match.url_name != 'enginex_ai' %}{% include 'core/ai_dock.html' %}{% endif %}
+    {% if request.resolver_match.url_name != 'enginex_ai' and request.resolver_match.url_name != 'process' %}{% include 'core/ai_dock.html' %}{% endif %}
     <meta name="ai-csrf-token" content="{{ csrf_token }}">
     <script src="{% static 'core/ai.js' %}" defer></script>
   {% endif %}

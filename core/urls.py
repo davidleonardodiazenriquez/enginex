@@ -1,20 +1,28 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
+from core.ai import views as ai_views
+from core.ai.legacy import chat
+from core.documents import views as documents
 from core.forms import EnginexAuthenticationForm
-from core.views import chat, dashboard, health, portfolio_map
-from core import contract_views as documents
-from core import ai_views
+from core.feedback import views as feedback
+from core.portfolio.views import dashboard, portfolio_map
+from core.process.views import process_workspace
+from core.reports import views as reports
+from core.views import health
 
 urlpatterns = [
+    path("process/", process_workspace, name="process"),
+    path("feedback/", feedback.feedback_workspace, name="feedback"),
+    path("feedback/<int:pk>/", feedback.feedback_detail, name="feedback_detail"),
     path("enginex-ai/", ai_views.workspace, name="enginex_ai"),
     path("api/enginex-ai/", ai_views.chat, name="enginex_ai_chat"),
     path("", portfolio_map, name="portfolio"),
     path("assets/al-rayyana/", dashboard, name="dashboard"),
     path("assets/<slug:asset_slug>/", dashboard, name="asset_dashboard"),
-    path("reports/", documents.portfolio_report, name="portfolio_report"),
-    path("reports/export/", documents.report_export, name="report_export"),
-    path("records/<int:pk>/", documents.record_detail, name="record_detail"),
+    path("reports/", reports.portfolio_report, name="portfolio_report"),
+    path("reports/export/", reports.report_export, name="report_export"),
+    path("records/<int:pk>/", reports.record_detail, name="record_detail"),
     path("contracts/", documents.contracts_workspace, name="contracts"),
     path("contracts/ingest/", documents.contract_ingest, name="contract_ingest"),
     path("contracts/<uuid:pk>/", documents.contract_detail, name="contract_detail"),

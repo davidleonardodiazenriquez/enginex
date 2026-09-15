@@ -36,7 +36,9 @@ is available. The graphics library is served by the app; a community photo and
 report links remain available if WebGL is unavailable.
 
 1. Open the portfolio map and select any of the six locations. Open its metrics
-   and record report. Point out the synthetic labels and reporting date.
+   and record report. Explain verbally that the portfolio uses synthetic data
+   and the source PDFs are anonymized test contracts. The interface uses normal
+   portfolio language and shows the reporting date.
 2. Open **Contract workspace**. Upload up to ten approved anonymized PDFs, or
    choose **Browse storage** and select PDFs from `storagex`. Confirm the files
    are approved for the demo and leave **Extract with EnginexAI** selected.
@@ -45,12 +47,17 @@ report links remain available if WebGL is unavailable.
 4. Review an extracted value against its quotation and rendered source page.
    **Show page here** changes the preview; **Source PDF** opens the original PDF
    at the cited page. Confirm or reject the field after inspecting its context.
-5. Expand **Associate with a location and record**. Select a record, choose the
+5. Clear premises matches are associated automatically after extraction. The
+   document shows **Linked automatically**, a reason and its supporting PDF page.
+   For unclear cases, open **Contracts → Needs location review**. Expand
+   **Associate with a location and record**. Select a record, choose the
    supported location (or keep **Unassigned / outside map**), and enter a reason.
    An intentional demo mapping must be described as such. The original premises,
    baseline values, previous extractions and association history are retained.
 6. Open **Portfolio report → With documents**, or the linked record detail.
-   Synthetic baseline values and extracted values have separate labels. A field
+   Baseline values are labelled **Portfolio record**; extracted values retain
+   document source links and review labels. Original synthetic provenance remains
+   in the database and CSV exports. A field
    can have multiple document values; conflicts are retained for review.
 7. Open a PDF from the report. Export **values & sources** to obtain one CSV row
    per value with origin, review status, document title, page, quote and PDF URL.
@@ -151,9 +158,10 @@ of replacing earlier evidence.
   extraction with an actionable message. Existing OCR text is used as supplied;
   image-only plans and signature pages are available visually but not interpreted.
 - Values are stored verbatim. Normalized financial reconciliation, automatic
-  lease matching, legal validation and cross-document amendment resolution are
-  outside this demo. The current ten contracts need a supported manual location
-  association or matching replacement documents before appearing under map assets.
+  unit/lease merging, legal validation and cross-document amendment resolution are
+  outside this demo. Explicit, unique premises names can be matched to existing
+  locations automatically. Locations outside the map and ambiguous evidence need
+  a manual decision; no new map location or unit relationship is invented.
 - The CSV is an evidence export, not a merged financial ledger. Document-derived
   values are not automatically substituted into synthetic totals or chart metrics.
 - Map tiles need browser internet access. Private PDF page previews use Poppler;

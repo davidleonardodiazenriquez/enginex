@@ -4,11 +4,14 @@ import os
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env", override=False, interpolate=False)
 
 ENVIRONMENT = os.getenv("DJANGO_ENVIRONMENT", "development").lower()
 DEBUG = ENVIRONMENT == "development"
+LOCAL_DEMO_AUTO_LOGIN = os.getenv("DJANGO_LOCAL_DEMO_AUTO_LOGIN", "false").lower() == "true"
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
@@ -42,6 +45,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "core.middleware.LocalDemoLoginMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]

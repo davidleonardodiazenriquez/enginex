@@ -1,7 +1,7 @@
-{% extends "core/base.html" %}
+{% extends "core/base.html" %}{% load portfolio_display %}
 {% load static %}
 {% block title %}Asset Overview · Enginex{% endblock %}
-{% block extra_head %}<link rel="stylesheet" href="{% static 'core/workspace.css' %}"><link rel="stylesheet" href="{% static 'core/property-scene.css' %}">{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'core/workspace.css' %}"><link rel="stylesheet" href="{% static 'core/property-scene.css' %}"><link rel="stylesheet" href="{% static 'core/feedback.css' %}">{% endblock %}
 {% block body_class %}dashboard-page{% endblock %}
 {% block content %}
 <header class="topbar">
@@ -13,8 +13,8 @@
   </nav>
   <div class="account-menu">
     <span class="account-avatar">{{ request.user.username|first|upper }}</span>
-    <span>{{ request.user.username }}</span>
-    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form>
+    <span>{{ request.user.username|portfolio_text }}</span>
+    {% if not request.local_demo_access %}<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form>{% endif %}
   </div>
 </header>
 
@@ -22,9 +22,9 @@
 {% if asset %}
   <section class="dashboard-heading">
     <div>
-      <p class="eyebrow">PORTFOLIO COMPOSITION · SAMPLE DATA</p>
+      <p class="eyebrow">PORTFOLIO OVERVIEW</p>
       <h1>{{ asset.name }} <span>Asset overview</span></h1>
-      <p>Demo composition, leasing exposure, and document evidence. All values retain their provenance.</p>
+      <p>Portfolio composition, leasing exposure, and contract intelligence.</p>
     </div>
     <div class="heading-actions">
       <a class="button button-secondary" href="{% url 'report_export' %}?asset={{ asset.pk }}">Export values & sources</a>
@@ -33,12 +33,13 @@
   </section>
 
   <section class="summary-grid">
-    <article><small>Synthetic record sample</small><strong>{{ summary.synthetic_records }}</strong><span>Unit / lease records · {{ summary.synthetic_fields }} values</span></article>
-    <article><small>Sample occupancy</small><strong>{{ summary.occupancy_pct|default_if_none:'—' }}%</strong><span>Synthetic demo · {{ summary.as_of|date:'d M Y' }}</span></article>
+    <article><small>Portfolio records</small><strong>{{ summary.synthetic_records }}</strong><span>Unit / lease records · {{ summary.synthetic_fields }} values</span></article>
+    <article><small>Occupancy</small><strong>{{ summary.occupancy_pct|default_if_none:'—' }}%</strong><span>As of {{ summary.as_of|date:'d M Y' }}</span></article>
     <article><small>Contract evidence</small><strong>{{ summary.documents }}</strong><a href="{% url 'portfolio_report' %}?asset={{ asset.pk }}&source=documents">Review document-backed values ↗</a></article>
-    <article><small>Explore the records</small><strong>{{ summary.records }}</strong><a href="{% url 'portfolio_report' %}?asset={{ asset.pk }}">Open this location’s report ↗</a></article>
+    <article><small>Net Promoter Score</small><strong>{{ feedback_summary.nps_display }}</strong><a href="{% url 'feedback' %}?location={{ asset.name|urlencode }}">{{ feedback_summary.scored }} responses · Explore resident feedback ↗</a></article>
   </section>
-  <p class="workspace-footnote">Synthetic sample totals are independent of the summary charts below. PDFs support their quoted values only; a manual association does not change the premises stated in a contract.</p>
+  <p class="workspace-footnote">Explore unit and lease records, then follow contract evidence to its source.</p>
+  {% include 'core/feedback_asset.html' %}
   {% include 'core/property_scene.html' %}
   <section class="overview-grid">
     <article class="map-card asset-photo-card"><a href="{% url 'portfolio' %}"><img src="{{ asset_photo }}" alt="{{ asset.name }} community"><span>Explore {{ asset.name }} on the portfolio map ↗</span></a></article>
@@ -46,18 +47,18 @@
     <article class="fact-card">
       <div class="card-title">Asset fact sheet</div>
       <dl class="facts">
-        {% for fact in asset_facts %}<div><dt>{{ fact.label }}</dt><dd>{{ fact.value }} <small class="source-badge synthetic">{{ fact.source }}</small></dd></div>{% endfor %}
+        {% for fact in asset_facts %}<div><dt>{{ fact.label }}</dt><dd>{{ fact.value|portfolio_text }} <small class="source-badge synthetic">{{ fact.source|portfolio_text }}</small></dd></div>{% endfor %}
       </dl>
     </article>
   </section>
 
-  <p class="notice"><span class="source-badge synthetic">{% if asset.field_sources %}Synthetic demo summary{% else %}Existing demo summary{% endif %}</span> All chart values below are demo assumptions in AED millions. They are not extracted contract facts or totals of the record sample.</p>
+  <p class="workspace-footnote">Summary metrics · AED millions · Reported separately from individual lease records.</p>
   <section class="metrics-grid" id="performance">
     <article class="metric-card ranked-card">
       <div class="metric-title"><span>◎</span>Top 10 tenants by revenue</div>
       <ol class="rank-list">
         {% for item in asset.tenant_revenues.all %}
-        <li><span class="rank">{{ item.rank }}</span><span class="label">{{ item.tenant_name }}</span><span class="bar"><i style="--value: {{ item.revenue_share }}"></i></span><strong>{{ item.revenue_share|floatformat:1 }}%</strong></li>
+        <li><span class="rank">{{ item.rank }}</span><span class="label">{{ item.tenant_name|portfolio_text }}</span><span class="bar"><i style="--value: {{ item.revenue_share }}"></i></span><strong>{{ item.revenue_share|floatformat:1 }}%</strong></li>
         {% endfor %}
       </ol>
       <div class="metric-total"><span>Top 10 total</span><strong>{{ tenant_total|floatformat:1 }}%</strong></div>
@@ -67,7 +68,7 @@
       <div class="metric-title"><span>％</span>Top 10 vacancies by revenue</div>
       <ol class="rank-list vacancy-list">
         {% for item in asset.vacancies.all %}
-        <li><span class="rank">{{ item.rank }}</span><span class="label">{{ item.unit_name }}</span><span class="bar"><i style="--value: {{ item.revenue_share }}"></i></span><strong>{{ item.revenue_share|floatformat:1 }}%</strong></li>
+        <li><span class="rank">{{ item.rank }}</span><span class="label">{{ item.unit_name|portfolio_text }}</span><span class="bar"><i style="--value: {{ item.revenue_share }}"></i></span><strong>{{ item.revenue_share|floatformat:1 }}%</strong></li>
         {% endfor %}
       </ol>
       <div class="metric-total"><span>Top 10 total</span><strong>{{ vacancy_total|floatformat:1 }}%</strong></div>
@@ -97,7 +98,7 @@
     </article>
   </section>
 {% else %}
-  <section class="empty-state"><h1>No portfolio data yet</h1><p>The demo portfolio has not been populated yet.</p></section>
+  <section class="empty-state"><h1>No portfolio data yet</h1><p>Add portfolio records to get started.</p></section>
 {% endif %}
 </main>
 

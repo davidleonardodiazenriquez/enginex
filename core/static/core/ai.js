@@ -17,7 +17,7 @@
     if (content !== undefined) node.textContent = content;
     return node;
   }
-  function safeLink(url) { return typeof url === 'string' && /^\/(?:contracts|records|reports)\//.test(url) && !url.includes('\\') ? url : null; }
+  function safeLink(url) { return typeof url === 'string' && /^\/(?:contracts|records|reports|feedback)\//.test(url) && !url.includes('\\') ? url : null; }
   function save() {
     try { sessionStorage.setItem(key, JSON.stringify(turns.slice(-12))); } catch (_) { /* The conversation still works when browser storage is disabled. */ }
   }
@@ -34,7 +34,7 @@
     if (value === null || value === undefined) return 'Not stated';
     const n = Number(value);
     if (!Number.isFinite(n)) return 'Not stated';
-    return `${unit === 'AED' ? 'AED ' : ''}${n.toLocaleString('en-US', { maximumFractionDigits: unit === '%' ? 2 : 0 })}${unit === '%' ? '%' : ''}`;
+    return `${unit === 'AED' ? 'AED ' : ''}${n.toLocaleString('en-US', { maximumFractionDigits: unit === '%' ? 2 : unit === 'NPS points' ? 1 : 0 })}${unit === '%' ? '%' : ''}`;
   }
   function download(name, content, type) {
     const url = URL.createObjectURL(new Blob([content], { type }));
@@ -48,12 +48,13 @@
     return node;
   }
   const palette = ['#285d50', '#a58c50', '#8ab39a', '#486a79', '#c1b784', '#708f75', '#b78f69', '#879cad'];
+  const chartSource = chart => chart.display_source || 'Portfolio records; document evidence and summary metrics are separate.';
   function drawChart(chart, host) {
     const rows = chart.rows.filter(row => typeof row.label === 'string' && (row.value === null || Number.isFinite(Number(row.value))));
     const width = Math.max(285, Math.min(800, host.clientWidth || 550));
     const font = { 'font-family': 'Arial, sans-serif', 'font-size': 11, fill: '#64806b' };
     let height = chart.type === 'bar' ? Math.max(150, rows.length * 49 + 40) : chart.type === 'doughnut' ? 240 + rows.length * 43 : 300;
-    const svg = svgNode('svg', { xmlns: 'http://www.w3.org/2000/svg', viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': `${chart.title}. ${chart.provenance}` });
+    const svg = svgNode('svg', { xmlns: 'http://www.w3.org/2000/svg', viewBox: `0 0 ${width} ${height}`, role: 'img', 'aria-label': `${chart.title}. ${chartSource(chart)}` });
     svg.append(svgNode('title', {}, chart.title), svgNode('rect', { width, height, fill: '#ffffff' }));
     if (!rows.length) { svg.append(svgNode('text', { ...font, x: 18, y: 55 }, 'No matching records to plot.')); host.replaceChildren(svg); return svg; }
     const valid = rows.filter(row => row.value !== null);
@@ -111,14 +112,14 @@
   function addChart(chart, parent) {
     if (!['bar', 'line', 'doughnut'].includes(chart.type) || !Array.isArray(chart.rows)) return;
     const card = element('section', 'ai-chart');
-    const header = element('div', 'ai-chart-header'); header.append(element('h3', '', chart.title), element('span', '', 'SYNTHETIC DATA'));
+    const header = element('div', 'ai-chart-header'); header.append(element('h3', '', chart.title), element('span', '', chart.record_label ? 'RESIDENT FEEDBACK' : 'PORTFOLIO DATA'));
     const plot = element('div', 'ai-chart-plot');
-    const scope = `${chart.matched_records} matching records · ${chart.location || 'all'} · ${chart.metric} ${chart.metric === 'count' ? 'records' : (chart.metric_field || '').replaceAll('_', ' ')}${chart.as_of ? ' · ' + chart.as_of : ''}`;
-    const note = element('p', 'ai-chart-note', `${scope}. ${chart.provenance}${chart.total_groups > chart.rows.length ? ` Showing ${chart.rows.length} of ${chart.total_groups} groups.` : ''}`);
+    const scope = `${chart.matched_records} matching ${chart.record_label || 'records'} · ${chart.location || 'all'} · ${chart.metric === 'nps' ? 'NPS' : chart.metric + ' ' + (chart.metric === 'count' ? (chart.record_label || 'records') : (chart.metric_field || '').replaceAll('_', ' '))}${chart.as_of ? ' · ' + chart.as_of : ''}`;
+    const note = element('p', 'ai-chart-note', `${scope}. ${chartSource(chart)}${chart.total_groups > chart.rows.length ? ` Showing ${chart.rows.length} of ${chart.total_groups} groups.` : ''}`);
     const actions = element('div', 'ai-chart-actions');
     const tableWrap = element('div', 'ai-chart-data'); tableWrap.hidden = true;
-    const table = element('table'); const tr = element('tr'); ['Group', chart.unit, 'Records'].forEach(value => tr.append(element('th', '', value))); table.append(tr);
-    chart.rows.forEach(row => { const tr = element('tr'); [row.label, format(row.value), row.records].forEach(value => tr.append(element('td', '', value))); table.append(tr); }); tableWrap.append(table);
+    const table = element('table'); const tr = element('tr'); ['Group', chart.unit, chart.record_label || 'Records'].forEach(value => tr.append(element('th', '', value))); table.append(tr);
+    chart.rows.forEach(row => { const tr = element('tr'); [row.label, format(row.value, chart.unit), row.records].forEach(value => tr.append(element('td', '', value))); table.append(tr); }); tableWrap.append(table);
     const show = element('button', '', 'View values'); show.type = 'button'; show.setAttribute('aria-expanded', 'false'); show.addEventListener('click', () => { tableWrap.hidden = !tableWrap.hidden; show.setAttribute('aria-expanded', String(!tableWrap.hidden)); });
     const exportCSV = element('button', '', 'Download CSV ↓'); exportCSV.type = 'button';
     exportCSV.addEventListener('click', () => {
@@ -128,10 +129,10 @@
     });
     const exportSVG = element('button', '', 'Download chart ↓'); exportSVG.type = 'button'; exportSVG.addEventListener('click', () => {
       const source = plot.querySelector('svg').cloneNode(true);
-      source.querySelector('title').textContent += ` — ${scope}. ${chart.provenance}`;
+      source.querySelector('title').textContent += ` — ${scope}. ${chartSource(chart)}`;
       const { width, height } = source.viewBox.baseVal;
       source.setAttribute('viewBox', `0 0 ${width} ${height + 30}`);
-      source.append(svgNode('rect', { x: 0, y: height, width, height: 30, fill: '#fff' }), svgNode('text', { x: 8, y: height + 17, 'font-family': 'Arial, sans-serif', 'font-size': 9, fill: '#597563' }, `Synthetic demo · ${chart.matched_records} records · ${chart.as_of || 'Date not stated'}`));
+      source.append(svgNode('rect', { x: 0, y: height, width, height: 30, fill: '#fff' }), svgNode('text', { x: 8, y: height + 17, 'font-family': 'Arial, sans-serif', 'font-size': 9, fill: '#597563' }, `Portfolio · ${chart.matched_records} records · ${chart.as_of || 'Date not stated'}`));
       download('enginex-analysis.svg', new XMLSerializer().serializeToString(source), 'image/svg+xml;charset=utf-8');
     });
     actions.append(show, exportCSV, exportSVG); card.append(header, plot, note, actions, tableWrap); parent.append(card);
@@ -152,13 +153,13 @@
     (response.charts || []).forEach(chart => addChart(chart, turn));
     const coverage = response.coverage;
     if (coverage) {
-      const note = element('p', 'ai-query-note'); note.append(element('i'), document.createTextNode(`Entire portfolio · ${coverage.records} records · ${coverage.contracts} contracts · ${(response.queries || []).length} data queries${response.retrieved_at ? ' · ' + new Date(response.retrieved_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}`)); turn.append(note);
+      const note = element('p', 'ai-query-note'); note.append(element('i'), document.createTextNode(`Entire portfolio · ${coverage.records} records · ${coverage.contracts} contracts${coverage.feedback_transcripts !== undefined ? ' · ' + coverage.feedback_transcripts + ' resident transcripts' : ''} · ${(response.queries || []).length} data queries${response.retrieved_at ? ' · ' + new Date(response.retrieved_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}`)); turn.append(note);
     }
     const sources = (response.sources || []).filter(source => safeLink(source.url));
     if (sources.length || response.queries?.length) {
       const details = element('details', 'ai-source-details'); details.append(element('summary', '', `Data & sources${sources.length ? ` · ${sources.length} links` : ''}`));
       (response.queries || []).forEach(query => details.append(element('p', '', `${query.tool.replaceAll('_', ' ')} · ${query.location} · ${query.matched ?? '—'} matches · ${query.returned} returned${query.has_more ? ' · More results available' : ''}`)));
-      const list = element('div', 'ai-source-list'); sources.forEach(source => { const a = element('a', '', source.label + (source.page ? ` · p. ${source.page} ↗` : ' ↗')); a.href = source.url; a.target = '_blank'; a.rel = 'noopener'; if (source.review || source.origin) a.append(element('small', '', source.review || source.origin)); list.append(a); }); details.append(list); turn.append(details);
+      const list = element('div', 'ai-source-list'); sources.forEach(source => { const a = element('a', '', (source.display_label || source.label) + (source.page ? ` · p. ${source.page} ↗` : ' ↗')); a.href = source.url; a.target = '_blank'; a.rel = 'noopener'; if (source.review || source.origin) a.append(element('small', '', source.review || source.display_origin || (source.origin === 'synthetic' ? 'Portfolio record' : source.origin))); list.append(a); }); details.append(list); turn.append(details);
     }
   }
   function renderTurn(item, pending = false) {

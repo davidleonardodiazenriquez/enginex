@@ -15,8 +15,8 @@ function showZone(code) {
   const zone = data.zones.find(item => item.code === code);
   if (!zone) return;
   root.querySelectorAll('[data-zone]').forEach(link => link.setAttribute('aria-current', String(link.dataset.zone === code)));
-  root.querySelector('[data-zone-title]').textContent = `Demo zone ${code}`;
-  root.querySelector('[data-zone-description]').textContent = `Synthetic unit-code group · ${zone.occupied} occupied`;
+  root.querySelector('[data-zone-title]').textContent = `Zone ${code}`;
+  root.querySelector('[data-zone-description]').textContent = `Unit group · ${zone.occupied} occupied`;
   root.querySelector('[data-zone-records]').textContent = zone.records;
   root.querySelector('[data-zone-occupancy]').textContent = zone.occupancy === null ? '—' : `${zone.occupancy}%`;
   root.querySelector('[data-zone-rent]').textContent = money(zone.annual_rent);
@@ -386,7 +386,7 @@ function initialize() {
     tooltip.hidden = !code;
     if (code) {
       const rect = stage.getBoundingClientRect();
-      tooltip.textContent = `Zone ${code} · ${data.zones.find(zone => zone.code === code).records} demo records`;
+      tooltip.textContent = `Zone ${code} · ${data.zones.find(zone => zone.code === code).records} records`;
       tooltip.style.left = `${Math.max(8, Math.min(event.clientX - rect.left + 15, rect.width - 200))}px`;
       tooltip.style.top = `${Math.max(8, Math.min(event.clientY - rect.top - 35, rect.height - 50))}px`;
     }

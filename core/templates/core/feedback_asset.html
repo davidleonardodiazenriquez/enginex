@@ -1,0 +1,6 @@
+<section class="feedback-pulse" aria-label="Resident experience">
+  <div><p class="eyebrow">RESIDENT EXPERIENCE</p><h2>What residents are saying.</h2><p>{{ feedback_summary.promoters }} promoters · {{ feedback_summary.passives }} passives · {{ feedback_summary.detractors }} detractors</p><div class="nps-mix" aria-label="Recommendation score distribution"><i class="promoter" style="width:{{ feedback_summary.promoter_pct }}%"></i><i class="passive" style="width:{{ feedback_summary.passive_pct }}%"></i><i class="detractor" style="width:{{ feedback_summary.detractor_pct }}%"></i></div><small>{{ feedback_summary.period_start|date:'d M' }} – {{ feedback_summary.period_end|date:'d M Y' }} · NPS uses recommendation scores</small></div>
+  <div class="pulse-theme"><small>MAIN POSITIVE</small><strong>{{ feedback_summary.positive_themes.0.topic|default:'Awaiting feedback' }}</strong><span>{{ feedback_summary.positive_themes.0.count|default:0 }} transcripts</span></div>
+  <div class="pulse-theme"><small>MAIN CONCERN</small><strong>{{ feedback_summary.negative_themes.0.topic|default:'No concerns identified' }}</strong><span>{{ feedback_summary.negative_themes.0.count|default:0 }} transcripts</span></div>
+  <a class="button button-secondary" href="{% url 'feedback' %}?location={{ asset.name|urlencode }}">Explore feedback ↗</a>
+</section>

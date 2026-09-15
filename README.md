@@ -1,19 +1,44 @@
 # Enginex
 
-Containerized Django base application for deployment to Azure Container Apps.
+Django portfolio, contract evidence and EnginexAI application, deployed to Azure
+Container Apps and runnable locally with PostgreSQL, Azure Storage and EnginexAI.
 
 ## Local development
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+brew install postgresql@18 poppler  # First setup only.
+make setup
+make db-init                       # Creates/preserves this checkout's cluster.
+make dev
 ```
 
-Open <http://localhost:8000>. Health checks are available at
-<http://localhost:8000/health/>.
+Create `.env` from `.env.example` before starting, and fill in the actual Azure
+credentials and a local database password. If `.env` already exists, preserve it.
+A new empty database needs a snapshot restore or explicit initialization; see
+[local development](docs/local-development.md). Open
+<http://127.0.0.1:8000>; local development opens automatically as `demo` with
+`DJANGO_LOCAL_DEMO_AUTO_LOGIN=true`. The local
+server reloads Python changes; refresh the browser for template and static-file
+changes. Restart it after changing `.env`. Stop it with Ctrl+C.
+
+The application loads the repository's `.env` automatically. Exported shell
+variables take precedence. Values are literal: `${...}` inside a key or password
+is not expanded. `.env` is excluded from Git and Docker builds.
+
+`make dev` starts this project's PostgreSQL cluster on `127.0.0.1:5433` and the
+web server. It does not migrate, seed, reset accounts or deploy. Local database
+edits stay local; source PDFs and AI calls use Azure. Run `make worker` in another
+terminal for contract extraction. `make db-stop` stops PostgreSQL while preserving
+its data in the ignored `.local/postgres/` directory.
+
+```bash
+make test   # Temporary SQLite database; Azure credentials disabled for tests.
+make check  # Django configuration and URL checks.
+```
+
+`python manage.py test` also defaults to `config.test_settings`; `make test`
+explicitly selects it even if a shell setting is present. Health checks are at
+<http://127.0.0.1:8000/health/> and indicate web liveness only.
 
 ## Docker
 
@@ -52,10 +77,11 @@ or registry credential should be stored in GitHub.
 Copy `.env.example` when developing locally. Production secrets must be stored
 in Azure Key Vault or Container Apps secrets, never committed to Git.
 
-SQLite is included only for the starter application. Use Azure Database for
-PostgreSQL before adding persistent production data. Set the `POSTGRES_*`
-variables documented in `.env.example` to enable PostgreSQL; when they are not
-set, local development and unit tests use SQLite.
+The `POSTGRES_*` values in `.env.example` target local PostgreSQL. In Azure, use
+the chosen Azure PostgreSQL host, port 5432 and `POSTGRES_SSLMODE=require`.
+Never deploy the local `.env`. An empty `POSTGRES_HOST` selects local SQLite for an intentionally
+offline database. Unit tests use a separate temporary SQLite database regardless
+of the Azure configuration in `.env`.
 
 The deployed application must receive `POSTGRES_PASSWORD` through an Azure
 Container Apps secret. Never store the database password in source control or
@@ -83,19 +109,22 @@ See [the demo walkthrough](docs/demo-walkthrough.md) for the story, operating
 steps, provenance rules and known limits. The original Al Rayyana summary is
 preserved separately from the new synthetic record sample.
 
+Only initialize/populate a database when intentionally preparing demo data:
+
 ```sh
 python manage.py migrate
 python manage.py populate_portfolio
-python manage.py process_contracts --loop
 ```
 
-Run the extraction worker alongside the local web server. The Container App
-starts both automatically through `scripts/start.sh`. Install Poppler locally
+The deployed Container App runs the extraction worker through `scripts/start.sh`.
+Local uploads enqueue work in the local database, which the Azure worker cannot
+access. Use `make worker` in a separate terminal for local extraction. Install Poppler locally
 (`brew install poppler` on macOS) for rendered PDF page previews; it is included
 in the container image.
 
-Configure `AZURE_STORAGE_ACCOUNT_NAME`, `AZURE_STORAGE_ACCOUNT_KEY` (a reference
-to the `azure-storage-key` Container App secret), and `AZURE_STORAGE_CONTAINER`.
+Configure `AZURE_STORAGE_ACCOUNT_NAME`, `AZURE_STORAGE_ACCOUNT_KEY` (the actual key
+in local `.env`, or a reference to the `azure-storage-key` secret in Container Apps),
+and `AZURE_STORAGE_CONTAINER`.
 The target is `sastestathonun001/storagex`. Local development without Azure uses
 ignored `private-media/` storage. Production requires configured Azure storage.
 
@@ -166,3 +195,10 @@ PDF evidence links and calculated bar, line and doughnut charts. A persistent
 bottom composer is available on all authenticated app pages. The layout adapts
 to mobile Safari with bottom navigation and keyboard-aware input positioning.
 See the demo walkthrough for example prompts, provenance and supported scope.
+
+## Process
+
+`/process/` presents a responsive, 20-second animation of the journey from a
+document to detected fields, extracted values, a review pipeline, and charts.
+It includes playback, seeking, stage selection, and an expanded presentation
+view. See [the Process module](docs/process.md) for its scope and accessibility.

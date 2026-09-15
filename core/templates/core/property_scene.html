@@ -12,7 +12,7 @@
       <img class="spatial-fallback" src="{{ asset_photo }}" alt="{{ asset.name }} community" data-scene-fallback>
       <div class="spatial-canvas" data-scene-canvas></div>
       <div class="spatial-location"><span class="spatial-live-dot"></span><div><strong>{{ asset.name }}</strong><small>{{ asset.location }}</small></div></div>
-      <span class="spatial-model-badge">ILLUSTRATIVE 3D MODEL</span>
+      <span class="spatial-model-badge">3D PROPERTY VIEW</span>
       <div class="spatial-loading" data-scene-loading><span class="spatial-loader"></span><strong>Preparing your perspective…</strong></div>
       <div class="spatial-error" data-scene-error hidden><strong>Explore the community</strong><p>The 3D view is unavailable in this browser. The photo and zone reports remain available below.</p></div>
       <div class="spatial-hover" data-scene-tooltip hidden></div>
@@ -23,19 +23,19 @@
     <aside class="spatial-inspector">
       <p class="spatial-kicker">EXPLORE THE COMMUNITY</p>
       <h3>Space meets<br> <em>the numbers.</em></h3>
-      <p class="spatial-intro">Select a building or zone to explore the portfolio sample behind it.</p>
-      <div class="spatial-zones" aria-label="Select a demo model zone">
-        {% for zone in property_scene.zones %}<a href="{{ zone.report_url }}" data-zone="{{ zone.code }}" aria-label="Select demo zone {{ zone.code }}" aria-current="false">{{ zone.code }}</a>{% endfor %}
+      <p class="spatial-intro">Select a building or zone to explore its portfolio records.</p>
+      <div class="spatial-zones" aria-label="Select a model zone">
+        {% for zone in property_scene.zones %}<a href="{{ zone.report_url }}" data-zone="{{ zone.code }}" aria-label="Select zone {{ zone.code }}" aria-current="false">{{ zone.code }}</a>{% endfor %}
       </div>
       <div class="spatial-selection" aria-live="polite" aria-atomic="true">
         <div class="spatial-selection-heading"><span class="spatial-selection-dot"></span><strong data-zone-title>Whole community</strong></div>
-        <p data-zone-description>6 illustrative model zones</p>
-        <dl><div><dt>Synthetic records</dt><dd data-zone-records>{{ summary.synthetic_records }}</dd></div><div><dt>Sample occupancy</dt><dd data-zone-occupancy>{{ summary.occupancy_pct|default_if_none:'—' }}%</dd></div><div class="spatial-rent"><dt>Synthetic annual rent</dt><dd data-zone-rent>AED {{ summary.annual_rent|floatformat:"0g" }}</dd></div></dl>
+        <p data-zone-description>6 property zones</p>
+        <dl><div><dt>Portfolio records</dt><dd data-zone-records>{{ summary.synthetic_records }}</dd></div><div><dt>Occupancy</dt><dd data-zone-occupancy>{{ summary.occupancy_pct|default_if_none:'—' }}%</dd></div><div class="spatial-rent"><dt>Annual rent</dt><dd data-zone-rent>AED {{ summary.annual_rent|floatformat:"0g" }}</dd></div></dl>
         <a class="spatial-report-link" data-zone-report href="{% url 'portfolio_report' %}?asset={{ asset.pk }}&source=synthetic">Explore these records <span>↗</span></a>
       </div>
-      <p class="spatial-provenance"><span>◇</span> Concept geometry, not a surveyed model. Zones group synthetic unit codes B01–B06; building shapes and positions are illustrative.</p>
+      <p class="spatial-provenance"><span>◇</span> Conceptual property view · Select zones B01–B06 to explore their records.</p>
     </aside>
   </div>
-  <footer class="spatial-footer"><span><i></i> Architecture & landscape</span><span><i></i> Selected demo zone</span><a href="#performance">Continue to performance ↓</a></footer>
+  <footer class="spatial-footer"><span><i></i> Architecture & landscape</span><span><i></i> Selected zone</span><a href="#performance">Continue to performance ↓</a></footer>
 </section>
 {{ property_scene|json_script:"property-scene-data" }}

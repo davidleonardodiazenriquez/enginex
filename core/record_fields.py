@@ -14,7 +14,7 @@ FIELDS = {
     "notice_period": "Notice period", "escalation": "Rent review / escalation",
     "vat": "VAT treatment", "late_payment": "Late payment terms",
     "break_clause": "Break / termination clause", "fit_out": "Fit-out / improvement contribution",
-    "furnished": "Furnished", "maintenance_status": "Maintenance status", "risk_band": "Demo risk band",
+    "furnished": "Furnished", "maintenance_status": "Maintenance status", "risk_band": "Risk band",
 }
 
 

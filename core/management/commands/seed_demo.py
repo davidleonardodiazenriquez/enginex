@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from core.models import Asset, PortfolioMetrics, TenantRevenue, Vacancy
+from core.portfolio.tenant_names import generated_tenant_name
 
 
 class Command(BaseCommand):
@@ -27,10 +28,10 @@ class Command(BaseCommand):
         )
 
         tenants = [
-            ("Tenant A", "12.4"), ("Tenant B", "9.8"), ("Tenant C", "7.6"),
-            ("Tenant D", "6.1"), ("Tenant E", "5.4"), ("Tenant F", "4.7"),
-            ("Tenant G", "4.2"), ("Tenant H", "3.3"), ("Tenant I", "2.9"),
-            ("Tenant J", "2.1"),
+            (generated_tenant_name(f"summary:{asset.name}:{rank}"), share)
+            for rank, share in enumerate(
+                ["12.4", "9.8", "7.6", "6.1", "5.4", "4.7", "4.2", "3.3", "2.9", "2.1"], 1
+            )
         ]
         vacancies = [
             ("Retail Unit 12", "2.1"), ("Retail Unit 27", "1.6"),

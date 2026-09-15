@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from django.core.management.base import BaseCommand
 from django.db import close_old_connections
 
-from core.contracts import claim_run, process_run
+from core.documents.extraction import claim_run, process_run
 
 
 class Command(BaseCommand):
