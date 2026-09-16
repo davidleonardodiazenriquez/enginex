@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 
 from core.ai import queries as ai_data
+from core.ai import responses
 from core.ai.tools import TOOLS
 from core.integrations import foundry
 from core.feedback.queries import feedback_insights, query_feedback
@@ -25,25 +26,28 @@ Give a direct answer normally under 450 words, with concise bullets when useful.
 
 
 def completion(messages, *, allow_tools=True, timeout=45):
-    url, _ = foundry._chat_endpoint()
-    payload = {"messages": messages, "max_completion_tokens": 6000}
-    if "/deployments/" not in url:
-        payload["model"] = settings.AZURE_AI_FOUNDRY_DEPLOYMENT.strip()
-    if allow_tools:
-        payload.update(tools=TOOLS, tool_choice="auto")
-        # The configured reasoning model requires this mode for function
-        # calls. The final tool-free pass can use the deployment's default.
-        if settings.AZURE_AI_FOUNDRY_DEPLOYMENT.strip().startswith("gpt-6-astra"):
-            payload["reasoning_effort"] = "none"
+    use_responses = settings.AZURE_AI_FOUNDRY_DEPLOYMENT.strip().startswith("gpt-6-astra")
+    if use_responses:
+        url, payload = responses.request_payload(messages, allow_tools=allow_tools)
+    else:
+        url, _ = foundry._chat_endpoint()
+        payload = {"messages": messages, "max_completion_tokens": 6000}
+        if "/deployments/" not in url:
+            payload["model"] = settings.AZURE_AI_FOUNDRY_DEPLOYMENT.strip()
+        if allow_tools:
+            payload.update(tools=TOOLS, tool_choice="auto")
     req = request.Request(url, data=json.dumps(payload, cls=DjangoJSONEncoder).encode(),
                           headers={"Content-Type": "application/json", "api-key": settings.AZURE_AI_FOUNDRY_API_KEY.strip()}, method="POST")
     try:
         with request.urlopen(req, timeout=timeout) as response:
             body = json.load(response)
-        choice = body["choices"][0]
-        if choice.get("finish_reason") == "length":
-            raise ValueError("Incomplete model response")
-        message = choice["message"]
+        if use_responses:
+            message = responses.parse_reply(body)
+        else:
+            choice = body["choices"][0]
+            if choice.get("finish_reason") == "length":
+                raise ValueError("Incomplete model response")
+            message = choice["message"]
         if not isinstance(message, dict) or not (message.get("tool_calls") or isinstance(message.get("content"), str) and message["content"].strip()):
             raise ValueError("Empty model response")
         return message
@@ -52,7 +56,8 @@ def completion(messages, *, allow_tools=True, timeout=45):
             detail = json.loads(exc.read(8192)).get("error", {})
         except (ValueError, OSError):
             detail = {}
-        logger.warning("EnginexAI provider failure: status=%s parameter=%s", exc.code,
+        logger.warning("EnginexAI provider failure: status=%s code=%s parameter=%s", exc.code,
+                       foundry._error_identifier(detail.get("code") if isinstance(detail, dict) else None),
                        foundry._error_identifier(detail.get("param") if isinstance(detail, dict) else None))
         raise foundry.FoundryUnavailable from None
     except (error.URLError, OSError, ValueError, KeyError, IndexError, TypeError) as exc:
@@ -83,7 +88,8 @@ def answer(question, history=None, current_location=None):
                                  "feedback_transcripts": snapshot.get("resident_feedback", {}).get("responses", 0)}}
         if not isinstance(calls, list) or len(calls) > 10 or step == 3:
             raise foundry.FoundryUnavailable
-        messages.append({"role": "assistant", "content": reply.get("content"), "tool_calls": calls})
+        messages.append({"role": "assistant", "content": reply.get("content"), "tool_calls": calls,
+                         **({"_response_output": reply["_response_output"]} if "_response_output" in reply else {})})
         for call in calls:
             total_calls += 1
             name = call.get("function", {}).get("name", "")

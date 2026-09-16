@@ -100,9 +100,15 @@ a turn has a bounded number of queries and a time limit.
 
 The global UI uses `/api/enginex-ai/`. The older `/api/chat/` and asset chat routes
 remain compatible with their previous, selected-asset summary API. The configured
-reasoning-model Chat Completions deployment requires `reasoning_effort=none` for function
-calls; tool-free finalization can use its default. No new cloud credentials,
-database tables or environment variables are required.
+reasoning-model deployment uses the Responses API with low reasoning effort for
+global analysis and function calls. The old Chat Completions mode rejected both
+`none` and reasoning-enabled function calls during verification on 2026-09-16.
+The adapter keeps function-call IDs and encrypted reasoning through each tool
+round, with `store=false`; these internal items are not returned to the browser.
+Other model deployments retain Chat Completions. No new cloud credentials,
+database tables or environment variables are required. The transport follows the
+[official function-calling flow](https://developers.openai.com/api/docs/guides/function-calling)
+and [stateless reasoning guidance](https://developers.openai.com/api/docs/guides/reasoning).
 
 Mobile layouts use safe-area insets and the visual viewport to keep the input
 above the keyboard, a compact property heading, scrollable report tables, touch

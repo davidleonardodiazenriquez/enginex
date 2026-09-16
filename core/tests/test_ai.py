@@ -119,16 +119,43 @@ class PortfolioAnalystTests(TestCase):
     @patch("core.ai.service.request.urlopen")
     def test_reasoning_model_function_calls_use_supported_transport_mode(self, urlopen):
         urlopen.return_value.__enter__.return_value.read.return_value = json.dumps({
-            "choices": [{"finish_reason": "stop", "message": {"content": "Ready"}}]
+            "status": "completed", "output": [{"type": "message", "role": "assistant",
+                                                  "content": [{"type": "output_text", "text": "Ready"}]}]
         })
         analyst.completion([{"role": "user", "content": "Hello"}])
         payload = json.loads(urlopen.call_args.args[0].data)
-        self.assertEqual(payload["reasoning_effort"], "none")
+        self.assertEqual(urlopen.call_args.args[0].full_url, "https://example.openai.azure.com/openai/v1/responses")
+        self.assertEqual(payload["reasoning"], {"effort": "low"})
+        self.assertFalse(payload["store"])
         self.assertEqual(len(payload["tools"]), 7)
+        self.assertTrue(all(tool["strict"] is False and "name" in tool for tool in payload["tools"]))
         analyst.completion([{"role": "user", "content": "Hello"}], allow_tools=False)
         payload = json.loads(urlopen.call_args.args[0].data)
         self.assertNotIn("tools", payload)
         self.assertNotIn("reasoning_effort", payload)
+
+    @patch("core.ai.service.request.urlopen")
+    def test_responses_replays_reasoning_and_tool_results_before_returning_chart(self, urlopen):
+        output = [
+            {"id": "rs_1", "type": "reasoning", "summary": [], "encrypted_content": "opaque-reasoning"},
+            {"id": "fc_1", "type": "function_call", "call_id": "call_1", "name": "aggregate_records",
+             "arguments": json.dumps({"group_by": "location", "metric": "sum", "metric_field": "annual_rent", "chart_type": "bar"})},
+        ]
+        urlopen.return_value.__enter__.return_value.read.side_effect = [
+            json.dumps({"status": "completed", "output": output}),
+            json.dumps({"status": "completed", "output": [{"type": "message", "role": "assistant",
+                "content": [{"type": "output_text", "text": "Here is the annual rent comparison."}]}]}),
+        ]
+        result = analyst.answer("Plot annual rent across all properties", current_location="Gate")
+        self.assertEqual(len(result["charts"]), 1)
+        self.assertEqual(result["queries"][0]["matched"], 720)
+        followup = json.loads(urlopen.call_args.args[0].data)
+        self.assertEqual(followup["input"][-3:-1], output)
+        self.assertEqual(followup["input"][-1]["type"], "function_call_output")
+        self.assertEqual(followup["input"][-1]["call_id"], "call_1")
+        self.assertEqual(json.loads(followup["input"][-1]["output"])["matched_records"], 720)
+        self.assertFalse(followup["store"])
+        self.assertNotIn("opaque-reasoning", json.dumps(result, default=str))
 
     @patch("core.ai.views.analyst.answer",return_value={"answer":"Global answer","charts":[],"sources":[]})
     def test_authenticated_endpoint_uses_global_agent_and_validates_history(self, answer):
