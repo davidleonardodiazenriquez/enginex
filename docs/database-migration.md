@@ -1,4 +1,10 @@
-# PostgreSQL migration to the second tenant
+# Historical PostgreSQL copy — 2026-09-15
+
+This records the earlier copy into `enginex`. It is **not the current release
+target**. On 2026-09-16 a newer snapshot was restored into `enginex_live`, and the
+independent new-tenant app began using it with new Storage and Foundry resources.
+Use [the current deployment guide](azure-deployment.md) for future releases.
+The later-switch instructions below describe the earlier plan, now superseded.
 
 Requested on 2026-09-15. Copy the existing Enginex database to the new server;
 leave the Container App's database configuration unchanged for a later switch.

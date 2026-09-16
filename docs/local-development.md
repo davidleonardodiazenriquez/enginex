@@ -86,7 +86,7 @@ an existing database; it can alter accounts and data.
 
 Resident feedback, NPS calculation and local sentiment analysis are documented in
 [Resident feedback](resident-feedback.md), including population/analysis commands
-and the additive migration needed for the next release.
+and the additive migration already included in the hosted release.
 
 Generated occupied leases and tenant rankings use fictional person names in
 English letters, including transliterated Arabic names. Names remain stable for
@@ -121,11 +121,11 @@ metadata. Existing extracts can be matched without another model call:
 This command is idempotent and preserves existing manual associations. It was
 applied locally: two Eastern Mangroves contracts linked automatically, ten need
 review, and one earlier outside-portfolio decision was preserved. Source PDFs,
-extracted fields, record IDs and baseline data were unchanged. Apply the migration
-and run this command against the explicitly selected Azure database only as part
-of a future authorized release.
+extracted fields, record IDs and baseline data were unchanged. The hosted release
+has the same classification; future runs must target the explicitly selected
+database.
 
-This Mac uses an independent snapshot of the currently serving Azure database,
+This Mac uses an independent snapshot of the original Azure database,
 including accounts, six locations, synthetic leases, extracted contract fields
 and document provenance. Database edits, password changes, reviews and extraction
 jobs now stay local. They do not automatically appear in the deployed app, and
@@ -188,11 +188,17 @@ additive import with stable identifiers and provenance. Do not replace Azure
 accounts, contract records or the entire Azure database with this development
 snapshot.
 
-The current local refactor and database setup have not been deployed. The live
-Container App still points to the original Azure PostgreSQL server. A separate
-copy was already verified on `enginex-postgresql.postgres.database.azure.com`;
-see [database migration](database-migration.md) for its snapshot time and pending
-cutover. Select the intended Azure database explicitly at release time.
+The refactor and subsequent features were deployed on 2026-09-16. The current
+hosted app is now independent in `az_subscription_01`, using database
+`enginex_live` on `enginex-postgresql.postgres.database.azure.com`, Storage
+`stenginex9119/storagex` and Foundry `az-foundry-02-main`. See the
+[current deployment guide](azure-deployment.md) for releases. The original app
+and the older destination `enginex` database were preserved.
+
+The migration did not change this Mac's `.env`: local PostgreSQL and its existing
+original-tenant Storage/AI credentials remain in use. `.local/azure-source.env`
+is a historical backup, not the current deployment configuration. Local and
+hosted databases remain independent; never deploy local loopback settings.
 
 ## Code layout
 
