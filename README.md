@@ -54,7 +54,7 @@ docker run --rm -p 8000:8000 \
 The GitHub Actions workflow tests and builds changes. Security scans and the
 runtime-package assertion are disabled for this hackathon at the project owner's
 request. When Azure workload identity is configured, pushes to `main` also
-publish images to `acrtestathonun001` using the commit SHA and `latest` tags and
+publish images to `acrenginex9119` using the commit SHA and `latest` tags and
 deploy to Container Apps.
 
 Until that identity is configured, releases use the developer's signed-in Azure
@@ -69,8 +69,13 @@ federation:
 - `AZURE_TENANT_ID`
 - `AZURE_SUBSCRIPTION_ID`
 
-The federated identity needs `AcrPush` on `acrtestathonun001`. No Azure password
+The federated identity needs `AcrPush` on `acrenginex9119`. No Azure password
 or registry credential should be stored in GitHub.
+
+The current destination is subscription `az_subscription_01`
+(`9119b270-ccef-4d7f-b402-0d6f4862b1ad`). See
+[the tenant deployment guide](docs/azure-deployment.md) for resources, data copies,
+runtime configuration, verification, and the retained original deployment.
 
 ## Runtime configuration
 

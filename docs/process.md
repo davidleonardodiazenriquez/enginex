@@ -12,11 +12,15 @@ Escape or Close restores the normal page.
 The Process page omits the floating portfolio chatbox and its reserved space.
 The EnginexAI navigation and workspace links remain available.
 
-The supplied QR code appears beside the stage heading and stays visible throughout
+The website QR code appears beside the stage heading and stays visible throughout
 the animation, including expanded view. On mobile it sits below the heading.
-`core/static/core/enginex-access-qr.png` is the original supplied image, preserved
-without edits. Scanning or clicking it opens the existing public Azure Container
-App URL. If the public address changes, replace both the QR image and its link.
+`core/static/core/enginex-access-qr.svg` encodes the new tenant's public Container
+App URL. It replaces the original supplied code, which pointed to the previous
+tenant. Scanning and clicking both open
+`https://ca-enginex-demo.thankfulsky-34b83cfe.uaenorth.azurecontainerapps.io/`.
+If the public address changes, regenerate the QR image and update its link
+together. The SVG is generated offline with qrcode 8.2, with a four-module quiet
+zone and medium error correction; the application has no QR runtime dependency.
 
 This is an illustrative explanation, not a live extraction job or a report.
 The document fields and chart values are fixed examples, rendered locally by the
