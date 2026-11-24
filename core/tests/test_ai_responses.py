@@ -12,6 +12,37 @@ from core.tests.support import FOUNDRY_SETTINGS
 
 @override_settings(**FOUNDRY_SETTINGS)
 class ResponsesTransportTests(SimpleTestCase):
+    @override_settings(AZURE_AI_FOUNDRY_DEPLOYMENT="gpt-6.1-sol")
+    @patch("core.ai.service.request.urlopen")
+    def test_sol_uses_responses_for_function_call_continuity(self, urlopen):
+        output = [
+            {"type": "reasoning", "id": "reasoning-1", "encrypted_content": "opaque", "summary": []},
+            {"type": "function_call", "call_id": "call-1", "name": "feedback_insights", "arguments": "{}"},
+        ]
+        urlopen.return_value.__enter__.return_value.read.return_value = json.dumps({
+            "status": "completed", "output": output})
+        reply = service.completion([{"role": "user", "content": "Compare property NPS"}])
+        req = urlopen.call_args.args[0]
+        payload = json.loads(req.data)
+        self.assertTrue(req.full_url.endswith("/responses"))
+        self.assertEqual(payload["model"], "gpt-6.1-sol")
+        self.assertEqual(payload["reasoning"], {"effort": "low"})
+        self.assertFalse(payload["store"])
+        self.assertTrue(all(tool["type"] == "function" for tool in payload["tools"]))
+        self.assertEqual(reply["tool_calls"][0]["id"], "call-1")
+
+        urlopen.return_value.__enter__.return_value.read.return_value = json.dumps({
+            "status": "completed", "output": [{"type": "message", "content": [
+                {"type": "output_text", "text": "Ready"}]}]})
+        messages = [{"role": "user", "content": "Compare property NPS"}, reply,
+                    {"role": "tool", "tool_call_id": "call-1", "content": "{}"}]
+        self.assertEqual(service.completion(messages, allow_tools=False)["content"], "Ready")
+        payload = json.loads(urlopen.call_args.args[0].data)
+        self.assertEqual(payload["input"][1:3], output)
+        self.assertEqual(payload["input"][3], {
+            "type": "function_call_output", "call_id": "call-1", "output": "{}"})
+        self.assertNotIn("tools", payload)
+
     def test_endpoint_forms_keep_the_configured_resource_and_model(self):
         for endpoint, expected in [
             ("https://example.openai.azure.com", "https://example.openai.azure.com/openai/v1/responses"),
