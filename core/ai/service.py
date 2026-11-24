@@ -26,7 +26,7 @@ Give a direct answer normally under 450 words, with concise bullets when useful.
 
 
 def completion(messages, *, allow_tools=True, timeout=45):
-    use_responses = settings.AZURE_AI_FOUNDRY_DEPLOYMENT.strip().startswith("gpt-6-astra")
+    use_responses = settings.AZURE_AI_FOUNDRY_DEPLOYMENT.strip().startswith(("gpt-6-astra", "gpt-6.1-sol"))
     if use_responses:
         url, payload = responses.request_payload(messages, allow_tools=allow_tools)
     else:
